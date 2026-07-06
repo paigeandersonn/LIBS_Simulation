@@ -87,7 +87,7 @@ def test_repr_is_readable():
 
 
 def test_state_with_unit_conversion():
-    from libssim.core.units import ev_to_k, nm_to_m
+    from src.libssim.core.units import ev_to_k, nm_to_m
     s = make_state(temperature_K=ev_to_k(1.0))
     assert s.temperature_K == pytest.approx(11604.518, rel=1e-4)
     assert nm_to_m(656.272) == pytest.approx(6.56272e-7)
