@@ -28,3 +28,8 @@ state = PlasmaState(
 )
 
 print(state)
+```
+
+## Documentation
+
+See the [API Reference](reference.md) for full documentation.

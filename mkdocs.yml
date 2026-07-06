@@ -1,15 +1,9 @@
 site_name: libssim
-site_description: Forward modeling framework for Laser-Induced Breakdown Spectroscopy
 
 theme:
   name: material
   palette:
-    - scheme: default
-      primary: indigo
-      accent: indigo
-  features:
-    - navigation.sections
-    - navigation.expand
+    primary: indigo
 
 plugins:
   - search
@@ -18,12 +12,8 @@ plugins:
         python:
           options:
             show_root_heading: true
-            show_source: true
             docstring_style: numpy
 
 nav:
   - Home: index.md
-  - API Reference:
-      - PlasmaState: reference/plasma_state.md
-      - Spectrum: reference/spectrum.md
-      - Constants & Units: reference/constants_units.md
+  - API Reference: reference.md
