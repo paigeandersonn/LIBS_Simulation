@@ -32,4 +32,4 @@ print(state)
 
 ## Documentation
 
-See the [API Reference](reference/reference.md) for full documentation.
+See the [API Reference](reference.md) for full documentation.
