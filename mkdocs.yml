@@ -1,0 +1,39 @@
+site_name: libssim
+site_description: Forward modeling framework for Laser-Induced Breakdown Spectroscopy
+site_author: libssim contributors
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+  features:
+    - navigation.sections
+    - navigation.expand
+    - search.highlight
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            show_root_heading: true
+            show_source: true
+            docstring_style: numpy
+            show_signature_annotations: true
+
+nav:
+  - Home: index.md
+  - API Reference:
+      - Core:
+          - PlasmaState: core/state.md
+          - Spectrum: core/spectrum.md
+      - Utilities:
+          - Constants & Units: core/units.md
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
