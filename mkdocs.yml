@@ -11,9 +11,9 @@ plugins:
       handlers:
         python:
           paths: [src]
-            options:
-              show_root_heading: true
-              docstring_style: numpy
+          options:
+            show_root_heading: true
+            docstring_style: numpy
 
 nav:
   - Home: index.md
