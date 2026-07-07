@@ -72,14 +72,14 @@ class PlasmaState:
 
     electron_density_m3 : float
         Electron number density n_e (m^{-3}).
-        - Determined experimentally via Stark broadening of Hα (Ch. 3, 6)
-        - Calculated via Saha solver in MC-LIBS (App. D)
+        - Determined experimentally via Stark broadening of Hα (Ch. 3,5, 6)
+        - Calculated via Saha solver in MC-LIBS (Ch. 5, App. D)
         - Must satisfy 0 ≤ n_e ≤ total_density_m3
 
     total_density_m3 : float
         Total particle number density (atoms + singly-charged ions + electrons)
         in m^{-3}. Corresponds to n_tot or Σ n_j(r,t) in the thesis
-        radiative plasma expansion model (Ch. 5, App. B).
+        radiative plasma expansion model (Ch. 5, App. B). Depends on radial coordinate and time
 
     radius_m : float
         Characteristic / outer plasma radius R (m). Used for:
