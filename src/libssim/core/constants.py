@@ -16,7 +16,7 @@ context for each constant used in the model.
 | Constant     | Symbol   | Value                  | Description |
 |--------------|----------|------------------------|-----------|
 | `C`          | c        | `2.99792458e8`         | Speed of light in vacuum (m s⁻¹). Fundamental constant that relates wavelength and frequency of electromagnetic radiation. Used for Doppler broadening calculations and photon energy conversions. |
-| `H`          | h        | `6.62607015e-34`       | Planck's constant (J s). Defines the relationship between the energy and frequency of a photon (E = h * frequency). Essential for calculating photon energies from observed wavelengths. |
+| `H`          | h        | `6.62607015e-34`       | Planck's constant (J s). Defines the relationship between the energy and frequency of a photon (E = h × frequency). Essential for calculating photon energies from observed wavelengths. |
 | `KB`         | k_B      | `1.380649e-23`         | Boltzmann constant (J K⁻¹). Relates macroscopic temperature to microscopic thermal energy. Central to Saha-Boltzmann equilibrium calculations for level populations and ionization balance. |
 | `ME`         | m_e      | `9.1093837015e-31`     | Rest mass of the electron (kg). Important in plasma physics for calculating electron thermal velocities and certain broadening mechanisms. |
 | `E`          | e        | `1.602176634e-19`      | Elementary charge (C). Smallest unit of electric charge. Primarily used here as the conversion factor between Joules and electronvolts. |
