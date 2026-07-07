@@ -10,9 +10,10 @@ plugins:
   - mkdocstrings:
       handlers:
         python:
-          options:
-            show_root_heading: true
-            docstring_style: numpy
+          paths: [src]
+            options:
+              show_root_heading: true
+              docstring_style: numpy
 
 nav:
   - Home: index.md
