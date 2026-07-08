@@ -10,15 +10,15 @@
 
 ## Phase Overview
 
-| Phase | Focus                        | Primary Goal                                      | Estimated Effort |
-|-------|------------------------------|---------------------------------------------------|------------------|
-| 0     | Immutable Core               | Foundational data structures and SI units         | 1–2 days        |
-| 1     | Atomic Database              | Element-agnostic atomic data layer                | 2 days          |
-| 2     | Local LTE Physics            | Populations, emission, and line profiles          | 3 days          |
-| 3     | Spatial Transport            | Self-absorption and radiative transfer            | 3 days          |
-| 4     | Time & Instrument            | Temporal integration and detector response        | 3 days          |
-| 5     | API & Optimization           | Top-level simulator and parameter fitting         | 3 days          |
-| 6     | Plutonium Actinide Overrides | Isotope handling and sparse data support          | 4 days          |
+| Phase | Focus                        | Primary Goal                                      |
+|-------|------------------------------|---------------------------------------------------|
+| 0     | Immutable Core               | Foundational data structures and SI units         |
+| 1     | Atomic Database              | Element-agnostic atomic data layer                |
+| 2     | Local LTE Physics            | Populations, emission, and line profiles          |
+| 3     | Spatial Transport            | Self-absorption and radiative transfer            |
+| 4     | Time & Instrument            | Temporal integration and detector response        |
+| 5     | API & Optimization           | Top-level simulator and parameter fitting         |
+| 6     | Actinide Overrides           | Isotope handling and sparse data support          |
 
 ---
 
