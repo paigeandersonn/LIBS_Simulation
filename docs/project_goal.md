@@ -8,7 +8,7 @@ The goal is to produce physically realistic synthetic emission spectra while mai
 
 ## Long-Term Scientific Goal
 
-To accurately model complex actinide spectra — particularly plutonium isotopes — using publicly available atomic databases, with empirical corrections where necessary.
+To accurately model complex actinide spectra using publicly available atomic databases, with empirical corrections where necessary.
 
 ## Core Principles
 
@@ -24,4 +24,4 @@ Validation will proceed progressively:
 
 1. Simple, well-characterized elements (Na, Fe, Cu, Al, etc.)
 2. Cerium
-3. Actinides
+3. Complex actinides

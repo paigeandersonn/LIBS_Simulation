@@ -10,7 +10,7 @@ Validation should follow this order:
 2. Limiting cases and analytical solutions
 3. Numerical stability and convergence
 4. Comparison with literature values
-5. Comparison with experimental data
+5. Comparison with experimental data (if available)
 
 ## Phase 0 – Infrastructure
 
