@@ -12,3 +12,12 @@
 
 ::: libssim.core.constants
 ::: libssim.core.units
+
+## Physics
+
+::: libssim.physics.partition
+::: libssim.physics.saha
+::: libssim.physics.boltzmann
+::: libssim.physics.emission
+::: libssim.physics.line_profiles
+::: libssim.physics.continuum
