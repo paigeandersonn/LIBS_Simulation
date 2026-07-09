@@ -10,6 +10,12 @@ It draws inspiration from the work in:
 
 - Immutable and validated `PlasmaState`
 - Rich `Spectrum` container with metadata
+- Element-agnostic atomic data layer (`Transition`, NIST-style CSV parser)
+- Local LTE physics: partition functions, Saha ionization balance with
+  exact mass conservation, Boltzmann populations, line emission and
+  bound-bound absorption, Doppler/Stark/Voigt line profiles, and
+  free-free / free-bound continuum — every equation cited back to the
+  dissertation by equation and page number
 - Strict SI units throughout
 - Designed to support Monte Carlo LIBS-style optimization
 

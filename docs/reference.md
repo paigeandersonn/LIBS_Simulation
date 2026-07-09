@@ -13,6 +13,12 @@
 ::: libssim.core.constants
 ::: libssim.core.units
 
+## Atomic Data
+
+::: libssim.atomic.transition
+::: libssim.atomic.base
+::: libssim.atomic.parsers
+
 ## Physics
 
 ::: libssim.physics.partition

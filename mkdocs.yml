@@ -5,6 +5,12 @@ theme:
   palette:
     primary: indigo
 
+# README.md is for browsing docs/ on GitHub (conflicts with index.md);
+# herrera_k.pdf is the dissertation scan — keep it out of the built site.
+exclude_docs: |
+  README.md
+  herrera_k.pdf
+
 plugins:
   - search
   - mkdocstrings:
@@ -18,3 +24,10 @@ plugins:
 nav:
   - Home: index.md
   - API Reference: reference.md
+  - Project Docs:
+      - Project Goal: project_goal.md
+      - Development Rules: development_rules.md
+      - Implementation Plan: implementation_plan.md
+      - Architecture: architecture.md
+      - Validation Strategy: validation_strategy.md
+      - AI Instructions: ai_instructions.md

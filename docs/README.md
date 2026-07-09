@@ -13,4 +13,4 @@ Before implementing new features or making significant changes, read these docum
 5. [Validation Strategy](validation_strategy.md)
 6. [AI Instructions](ai_instructions.md)
 
-The dissertation (`dissertation.pdf`) is the primary **scientific reference**.
+The dissertation (`herrera_k.pdf`, in this folder; excluded from the built docs site) is the primary **scientific reference**.
