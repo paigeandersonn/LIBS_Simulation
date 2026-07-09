@@ -183,12 +183,16 @@ def partition_function_from_levels(
     if np.any(E_ev < 0.0) or not np.all(np.isfinite(E_ev)):
         raise ValueError("level energies must be finite and >= 0 eV")
 
+    # Flatten T so the (n_T, n_levels) outer broadcast below works for
+    # scalar, 1-D, or N-D temperature input alike; reshape at return.
     T = _validate_temperature(temperature_K).ravel()
     scalar_input = np.ndim(temperature_K) == 0
 
     energies_J = E_ev * EV  # eV -> J (SI) via core constant
     # Broadcast: (n_T, 1) temperatures against (n_levels,) energies.
     exponent = -energies_J[np.newaxis, :] / (KB * T[:, np.newaxis])
+    # Boltzmann-weighted degeneracy sum; E_i >> k_B*T terms underflow
+    # harmlessly to 0 (they contribute nothing physically).
     U = np.sum(g[np.newaxis, :] * np.exp(exponent), axis=1)
 
     return float(U[0]) if scalar_input else U.reshape(np.shape(temperature_K))
@@ -244,6 +248,8 @@ class PartitionFunctionTable:
             raise ValueError("temperatures_K must be strictly increasing")
         if np.any(U <= 0.0):
             raise ValueError("partition function values must be > 0")
+        # Arrays were defensively copied above; locking the buffers makes
+        # the frozen dataclass deeply immutable (development_rules.md).
         T.setflags(write=False)
         U.setflags(write=False)
         object.__setattr__(self, "temperatures_K", T)
@@ -296,6 +302,8 @@ class PartitionFunctionTable:
                 "register a polynomial fallback with the provider instead of "
                 "extrapolating"
             )
+        # Piecewise-linear interpolation: monotone between grid points,
+        # cannot overshoot the tabulated values (module docs).
         U = np.interp(T, self.temperatures_K, self.values)
         scalar_input = np.ndim(temperature_K) == 0
         return float(U[0]) if scalar_input else U.reshape(np.shape(temperature_K))
@@ -369,6 +377,8 @@ class PartitionFunctionPolynomial:
                 f"temperature outside polynomial validity range "
                 f"[{lo:.6g}, {hi:.6g}] K"
             )
+        # Irwin form: ln U = sum_k a_k (ln T)^k; exponentiating guarantees
+        # U > 0 for any real coefficients.
         ln_U = np.polynomial.polynomial.polyval(np.log(T), self.coefficients)
         U = np.exp(ln_U)
         scalar_input = np.ndim(temperature_K) == 0
@@ -510,6 +520,8 @@ class PartitionFunctionProvider:
             )
 
         T = _validate_temperature(temperature_K)
+        # NaN marks "not yet resolved"; each strategy below fills only
+        # the slots it covers, so resolution order is table -> polynomial.
         U = np.full(T.shape, np.nan, dtype=np.float64)
 
         if table is not None:
@@ -519,6 +531,7 @@ class PartitionFunctionProvider:
                     T[in_table], table.temperatures_K, table.values
                 )
         if poly is not None:
+            # Polynomial fallback only for points the table left open.
             remaining = np.isnan(U) & poly.covers(T)
             if np.any(remaining):
                 ln_U = np.polynomial.polynomial.polyval(

@@ -173,6 +173,8 @@ def doppler_fwhm_m(
         raise ValueError("temperature_K must be finite and > 0")
     m = _as_positive_scalar("emitter_mass_kg", emitter_mass_kg)
 
+    # Eq. 3-1: thermal-to-light speed ratio sqrt(k_B*T/(m*c^2)) times the
+    # Maxwellian FWHM factor sqrt(8*ln 2), scaled by lambda0.
     width = lam * np.sqrt(8.0 * np.log(2.0) * KB * T / (m * C**2))
     return _scalar_or_array(width)
 
@@ -208,8 +210,18 @@ def _stark_ion_bracket(
     temperature_K: ArrayLike | None,
     coefficient: float,
 ) -> NDArray[np.float64]:
-    """Common ion-broadening bracket of Eqs. 3-8/3-9, p. 53 (SI units)."""
+    """Common ion-broadening bracket of Eqs. 3-8/3-9, p. 53 (SI units).
+
+    The `coefficient` selects the form: 5.53e-6 is the *width* variant
+    (Eq. 3-8, full bracket [1 + ion term], electron term normalized to 1)
+    while 6.32e-6 is the *shift* variant (Eq. 3-9, bare ion term to be
+    added to the tabulated d/w ratio). Both coefficients are the CGS
+    Griem factors (1.75 and 2.0) times 10^-5.5 from the cm^-3 -> m^-3
+    density rescaling (module docs).
+    """
     if ion_broadening_alpha == 0.0:
+        # Electron-impact only: width bracket collapses to 1, shift ion
+        # term to 0 (the CF-LIBS working forms, Eq. 5-17 / d/w alone).
         return np.asarray(1.0 if coefficient == 5.53e-6 else 0.0)
     if temperature_K is None:
         raise ValueError(
@@ -220,6 +232,8 @@ def _stark_ion_bracket(
     if np.any(T <= 0) or not np.all(np.isfinite(T)):
         raise ValueError("temperature_K must be finite and > 0")
     n_e = electron_density_m3
+    # 0.0068*n_e^(1/6)/sqrt(T) is Eq. 5-15's Debye-sphere correction
+    # (1 - 0.75*n_D^(-1/3)) rewritten in SI with beta = 0.75 folded in.
     debye_term = 1.0 - 0.0068 * n_e ** (1.0 / 6.0) / np.sqrt(T)
     ion_term = coefficient * ion_broadening_alpha * n_e**0.25 * debye_term
     return np.asarray(1.0 + ion_term if coefficient == 5.53e-6 else ion_term)
@@ -276,6 +290,8 @@ def stark_fwhm_m(
         raise ValueError("electron_density_m3 must be finite and >= 0")
 
     bracket = _stark_ion_bracket(n_e, alpha, temperature_K, 5.53e-6)
+    # FWHM = 2w at the tabulation reference density 1e22 m^-3 (1e16 cm^-3),
+    # scaled linearly in n_e (Eq. 3-8 / Eq. 5-17).
     return _scalar_or_array(2.0e-22 * w * n_e * bracket)
 
 
@@ -320,7 +336,9 @@ def stark_shift_m(
         raise ValueError("electron_density_m3 must be finite and >= 0")
 
     ion_term = _stark_ion_bracket(n_e, alpha, temperature_K, 6.32e-6)
-    return _scalar_or_array(1.0e-22 * n_e * w * (ratio + ion_term))
+    # shift = w * (n_e / 1e22 m^-3) * [d/w + ion term]; sign follows the
+    # tabulated d/w (Eq. 3-9).
+    return _scalar_or_array(1.0e-22 * w * n_e * (ratio + ion_term))
 
 
 def fwhm_wavelength_to_frequency(
@@ -370,8 +388,10 @@ def _normalized_voigt(
         raise ValueError(
             "at least one of gaussian_fwhm and lorentzian_fwhm must be > 0"
         )
-    sigma = gaussian_fwhm / _GAUSS_FWHM_PER_SIGMA
-    gamma = lorentzian_fwhm / 2.0
+    sigma = gaussian_fwhm / _GAUSS_FWHM_PER_SIGMA  # Gaussian std dev
+    gamma = lorentzian_fwhm / 2.0                  # Lorentzian HWHM
+    # scipy handles the pure limits itself: sigma=0 -> Cauchy PDF,
+    # gamma=0 -> normal PDF; both stay exactly unit-area.
     return _scipy_voigt(detuning, sigma, gamma)
 
 
@@ -511,6 +531,9 @@ def stark_shifted_voigt_reduced(
     if np.any(a < 0) or not np.all(np.isfinite(a)):
         raise ValueError("damping_a must be finite and >= 0")
     u = np.asarray(reduced_detuning, dtype=np.float64)
+    # With sigma = 1/sqrt(2), scipy's Voigt PDF equals H(a, u)/sqrt(pi)
+    # identically — Eq. 5-53 without any rescaling (unit-tested against
+    # direct numerical evaluation of the defining integral).
     return _scalar_or_array(_scipy_voigt(u, 1.0 / np.sqrt(2.0), a))
 
 
@@ -564,6 +587,8 @@ def lorentzian_fwhm_from_voigt(
         raise ValueError(
             "gaussian_fwhm cannot exceed voigt_fwhm (Eq. 5-18 domain)"
         )
+    # Eq. 5-18: deduct the Gaussian contribution from the fitted Voigt
+    # width; exact in both pure limits (dG=0 -> dV; dG=dV -> 0).
     return _scalar_or_array(dV - dG**2 / dV)
 
 
@@ -586,4 +611,5 @@ def voigt_fwhm_estimate(
         raise ValueError("gaussian_fwhm must be finite and >= 0")
     if np.any(dL < 0) or not np.all(np.isfinite(dL)):
         raise ValueError("lorentzian_fwhm must be finite and >= 0")
+    # Solving Eq. 5-18 for the Voigt width (quadratic in dV, positive root).
     return _scalar_or_array(dL / 2.0 + np.sqrt(dL**2 / 4.0 + dG**2))

@@ -199,15 +199,18 @@ def free_free_absorption_coefficient(
     n_i = _as_nonnegative("ion_density_m3", ion_density_m3)
     _validate_factors(charge_number, gaunt_factor, "gaunt_factor")
 
-    x = H * nu / (KB * T)
+    x = H * nu / (KB * T)  # dimensionless photon energy h*nu/k_B*T
     kappa = (
         _KRAMERS_SI
         * n_e
         * n_i
         * charge_number**2
         * gaunt_factor
+        # Stimulated-emission factor (1 - e^-x) — the typo-corrected
+        # exponential of Eq. 5-50 (module docs); expm1 keeps the
+        # low-frequency kappa ~ nu^-2 limit accurate.
         * (-np.expm1(-x))
-        / (np.sqrt(T) * nu**3)
+        / (np.sqrt(T) * nu**3)  # Kramers T^(-1/2) nu^-3 scaling
     )
     return _scalar_or_array(kappa)
 
@@ -259,9 +262,12 @@ def free_bound_absorption_coefficient(
     n_i = _as_nonnegative("ion_density_m3", ion_density_m3)
     _validate_factors(charge_number, bound_free_correction, "bound_free_correction")
 
-    x = H * nu / (KB * T)
+    x = H * nu / (KB * T)  # dimensionless photon energy h*nu/k_B*T
     with np.errstate(over="ignore"):  # far-UV overflow -> inf (documented)
-        spectral_factor = np.expm1(x) * (-np.expm1(-x))  # (e^x - 1)(1 - e^-x)
+        # (e^x - 1)(1 - e^-x): algebraically identical to the printed
+        # e^x (1 - e^-x)^2 of Eq. 5-51; expm1 keeps the small-x limit
+        # (~x^2) accurate.
+        spectral_factor = np.expm1(x) * (-np.expm1(-x))
     kappa = (
         _KRAMERS_SI
         * n_e
@@ -349,6 +355,8 @@ def continuum_emission_coefficient(
         bound_free_correction,
     )
     radiance = blackbody_spectral_radiance_hz(frequency_hz, temperature_K)
+    # Kirchhoff's law: epsilon_nu = kappa_nu * B_nu(T), the LTE source
+    # term of the RTE (Eq. 5-44).
     return _scalar_or_array(np.asarray(kappa) * np.asarray(radiance))
 
 
@@ -400,6 +408,6 @@ def planck_mean_absorption_coefficient(
         * gaunt_factor
         * n_e
         * n_i
-        / T**3.5
+        / T**3.5  # the n_e * sum(n_i) / T^(7/2) scaling of Eq. 5-46
     )
     return _scalar_or_array(kappa)

@@ -201,6 +201,8 @@ def line_emission_coefficient(
     n_k = _as_nonnegative("upper_level_density_m3", upper_level_density_m3)
     P = _as_nonnegative("profile_hz", profile_hz)
     nu0 = transition_frequency_hz(transition)
+    # photon energy x isotropic 1/4pi x volumetric decay rate (Eq. 5-8)
+    # x normalized spectral distribution P(nu).
     return _scalar_or_array(
         (H * nu0 / (4.0 * np.pi)) * n_k * transition.a_ki * P
     )
@@ -223,6 +225,8 @@ def einstein_b_lu(transition: Transition) -> float:
     Implementation Decisions.
     """
     nu0 = transition_frequency_hz(transition)
+    # B_lu = (g_u/g_l) * B_ul with B_ul = A_ul * c^3/(8*pi*h*nu0^3);
+    # correctness is pinned by the Kirchhoff closure test.
     return (
         (transition.g_upper / transition.g_lower)
         * C**3
@@ -285,8 +289,10 @@ def line_absorption_coefficient(
     T = _as_positive("temperature_K", temperature_K)
 
     nu0 = transition_frequency_hz(transition)
+    # Eq. 5-52 restricted to one line: (h*nu/c) * B_lu * n_l * P(nu).
     kappa = (H * nu0 / C) * einstein_b_lu(transition) * n_l * P
     if include_stimulated_emission:
+        # (1 - e^-x) via expm1: accurate when h*nu0 << k_B*T.
         kappa = kappa * (-np.expm1(-H * nu0 / (KB * T)))
     return _scalar_or_array(kappa)
 
@@ -311,7 +317,8 @@ def blackbody_spectral_radiance_hz(
     """
     nu = _as_positive("frequency_hz", frequency_hz)
     T = _as_positive("temperature_K", temperature_K)
-    x = H * nu / (KB * T)
+    x = H * nu / (KB * T)  # dimensionless photon energy h*nu/k_B*T
+    # expm1 keeps the Rayleigh-Jeans limit (x -> 0) accurate.
     with np.errstate(over="ignore"):  # exp overflow -> inf -> B = 0 (Wien tail)
         radiance = (2.0 * H * nu**3 / C**2) / np.expm1(x)
     return _scalar_or_array(radiance)

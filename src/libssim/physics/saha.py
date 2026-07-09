@@ -173,8 +173,12 @@ def saha_factor(
             "(effective ionization energy must stay positive)"
         )
 
-    chi_eff_J = (chi - dchi) * EV  # eV -> J (SI)
-    thermal = (2.0 * np.pi * ME * KB * T / H**2) ** 1.5  # m^-3
+    # Effective ionization energy chi - Delta_chi (Debye lowering), eV -> J.
+    chi_eff_J = (chi - dchi) * EV
+    # Electron translational phase-space factor (2*pi*m_e*k_B*T/h^2)^(3/2),
+    # units m^-3 — the inverse cubed thermal de Broglie wavelength.
+    thermal = (2.0 * np.pi * ME * KB * T / H**2) ** 1.5
+    # Eq. D-1: leading 2 = electron spin degeneracy; s(T) carries m^-3.
     s = 2.0 * (U_i / U_a) * thermal * np.exp(-chi_eff_J / (KB * T))
 
     if np.ndim(s) == 0:
@@ -204,6 +208,7 @@ def mcwhirter_minimum_electron_density_m3(
     dE = float(largest_gap_ev)
     if not (dE > 0.0 and np.isfinite(dE)):
         raise ValueError("largest_gap_ev must be finite and > 0")
+    # Thesis prints 1.6e12 cm^-3 (Eq. 5-3); x 1e6 converts to m^-3.
     n_min = 1.6e18 * np.sqrt(T) * dE**3
     if np.ndim(n_min) == 0:
         return float(n_min)
@@ -228,6 +233,8 @@ def debye_length_m(
     n_e = np.asarray(electron_density_m3, dtype=np.float64)
     if np.any(n_e <= 0.0) or not np.all(np.isfinite(n_e)):
         raise ValueError("electron_density_m3 must be finite and > 0")
+    # Electron-only shielding: ion mobility neglected on the shielding
+    # timescale (standard for LIBS diagnostics).
     lam = np.sqrt(EPSILON0 * KB * T / (n_e * _ELEM_CHARGE**2))
     if np.ndim(lam) == 0:
         return float(lam)
@@ -257,6 +264,8 @@ def debye_sphere_particle_count(
     T = _validate_temperature(temperature_K)
     n_e = np.asarray(electron_density_m3, dtype=np.float64)
     lam = debye_length_m(T, n_e)
+    # Electron count in a sphere of radius lambda_D; evaluating this SI
+    # form reproduces Eq. 5-16's CGS coefficient 1.72e9 (unit-tested).
     n_D = (4.0 / 3.0) * np.pi * np.asarray(lam) ** 3 * n_e
     if np.ndim(n_D) == 0:
         return float(n_D)
@@ -294,6 +303,8 @@ def ionization_potential_lowering_ev(
     lam = np.asarray(
         debye_length_m(temperature_K, electron_density_m3), dtype=np.float64
     )
+    # Coulomb energy of the freed charge z*e at the Debye radius — the
+    # shielding energy no longer needed to escape (Griem 1964).
     dchi_J = z * _ELEM_CHARGE**2 / (4.0 * np.pi * EPSILON0 * lam)
     dchi_ev = dchi_J / EV
     if dchi_ev.ndim == 0:
@@ -520,9 +531,12 @@ class SahaSolver:
             if s == 0.0:  # exp underflow: fully neutral limit (also 0/0 guard)
                 frac_ion = 0.0
             else:
+                # s/(s+n_e) lies in (0, 1], so 0 <= n_i <= n_j always.
                 frac_ion = s / (s + n_e)
             n_i = n_j * frac_ion          # Eq. D-10, p. 276
-            n_a = n_j - n_i               # Eq. D-2, p. 274 (exact conservation)
+            # Subtracting instead of evaluating Eq. D-8 independently makes
+            # n_a + n_i == n_j exact in floating point (acceptance <= 1e-10).
+            n_a = n_j - n_i               # Eq. D-2, p. 274
             ion[element] = n_i
             neutral[element] = n_a
 
@@ -578,8 +592,10 @@ class SahaSolver:
         s = np.array([float(self.saha_factor(el, T)) for el in elements])
 
         total_heavy = float(np.sum(n_heavy))
+        # If every s^j*n^j vanishes (empty plasma or full exp underflow),
+        # Eq. D-9 has no positive root: the plasma is exactly neutral.
         if total_heavy == 0.0 or float(np.sum(s * n_heavy)) == 0.0:
-            return 0.0  # empty or fully neutral plasma
+            return 0.0
 
         def charge_imbalance(n_e: float) -> float:
             # sum written to be exact at n_e = 0 for s = 0 terms
@@ -612,6 +628,9 @@ class SahaSolver:
             Mass conservation per element is exact; charge equilibrium
             holds only to the extent the state's n_e is Saha-consistent.
         """
+        # PlasmaState's total counts atoms + ions + electrons, while the
+        # n^j of Eq. D-2 count heavies only — remove the electrons before
+        # splitting by composition fractions (documented decision).
         n_heavy = state.total_density_m3 - state.electron_density_m3
         elemental = {
             element: fraction * n_heavy

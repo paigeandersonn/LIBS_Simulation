@@ -132,6 +132,8 @@ def boltzmann_population_fraction(
         raise ValueError("partition_function must be finite and > 0")
 
     energy_J = E_ev * EV  # eV -> J (SI) via core constant
+    # Eq. 5-1 divided by n_tot^s: degeneracy x Boltzmann factor, normalized
+    # by the partition function.
     fraction = g * np.exp(-energy_J / (KB * T)) / U
 
     if fraction.ndim == 0:
@@ -187,6 +189,7 @@ def upper_level_density(
         partition_function,
         temperature_K,
     )
+    # n_k^s = n_tot^s x Boltzmann fraction (Eq. 5-1, upper level of the line).
     density = n_s * fraction
     if np.ndim(density) == 0:
         return float(density)
@@ -239,4 +242,6 @@ def level_population_fractions(
 
     energy_J = E_ev * EV
     weights = g * np.exp(-energy_J / (KB * float(temperature_K)))
+    # U is the sum of these same weights, so the fractions sum to 1 by
+    # construction (Phase 2 acceptance criterion).
     return weights / U
