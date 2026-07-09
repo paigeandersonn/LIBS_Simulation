@@ -7,6 +7,8 @@ Covers the Phase 2 acceptance criterion (validation_strategy.md):
 
 from __future__ import annotations
 
+from typing import Any
+
 import numpy as np
 import pytest
 
@@ -31,8 +33,8 @@ class TestPopulationFraction:
 
     def test_vectorized_over_levels(self):
         f = boltzmann_population_fraction(G, E_EV, 25.0, T0)
-        assert f.shape == G.shape
-        assert np.all(f > 0)
+        assert np.shape(f) == G.shape  # np.shape: return type is float | ndarray
+        assert np.all(np.asarray(f) > 0)
 
     def test_scalar_input_returns_float(self):
         assert isinstance(
@@ -73,8 +75,10 @@ class TestLevelPopulationFractions:
         assert hot[0] < cold[0]
 
     def test_array_temperature_rejected(self):
+        # Intentionally violates the float annotation to hit the runtime guard.
+        bad_temperature: Any = np.array([1e4, 2e4])
         with pytest.raises(ValueError, match="scalar"):
-            level_population_fractions(G, E_EV, np.array([1e4, 2e4]))
+            level_population_fractions(G, E_EV, bad_temperature)
 
 
 class TestUpperLevelDensity:
