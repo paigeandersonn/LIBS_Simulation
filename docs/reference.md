@@ -34,3 +34,20 @@
 ::: libssim.transport.geometry
 ::: libssim.transport.emissivity
 ::: libssim.transport.radiative
+
+## Temporal
+
+::: libssim.temporal.base
+::: libssim.temporal.decay_models
+::: libssim.temporal.integrator
+
+## Instrument
+
+::: libssim.instrument.spectrometer
+::: libssim.instrument.optics
+::: libssim.instrument.noise
+::: libssim.instrument.response
+
+## Analysis
+
+::: libssim.analysis
