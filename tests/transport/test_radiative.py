@@ -25,8 +25,6 @@ from libssim.transport.radiative import (
     optical_depth,
 )
 
-from conftest import ATOMIC_MASSES_KG, RESONANCE_WAVELENGTH_M
-
 N_LAMBDA = 5  # synthetic tests use small flat spectral arrays
 
 
@@ -152,22 +150,22 @@ class TestAnalyticLimits:
 
 
 @pytest.fixture(scope="module")
-def line_grid():
+def line_grid(resonance_wavelength_m):
     fwhm = 3.5e-12
     return np.linspace(
-        RESONANCE_WAVELENGTH_M - 10 * fwhm,
-        RESONANCE_WAVELENGTH_M + 10 * fwhm,
+        resonance_wavelength_m - 10 * fwhm,
+        resonance_wavelength_m + 10 * fwhm,
         3001,
     )
 
 
 @pytest.fixture(scope="module")
-def model(saha_solver, resonance_transition, line_grid):
+def model(saha_solver, resonance_transition, line_grid, atomic_masses_kg):
     return LTESpectralModel(
         saha_solver=saha_solver,
         wavelength_m=line_grid,
         transitions=(resonance_transition,),
-        atomic_masses_kg=ATOMIC_MASSES_KG,
+        atomic_masses_kg=atomic_masses_kg,
         include_continuum=False,
     )
 
@@ -187,7 +185,7 @@ class TestSelfAbsorptionPhysics:
         )
 
     def test_optically_thick_line_self_reverses(
-        self, make_state, model, line_grid
+        self, make_state, model, line_grid, resonance_wavelength_m
     ):
         # Acceptance criterion: visible self-reversal (Fig. 3-3 dip,
         # pp. 53-54) — the saturated core approaches B_nu(T_shell),
@@ -197,22 +195,22 @@ class TestSelfAbsorptionPhysics:
         radiance = emergent_radiance(
             onion.path_segments(0.0), epsilon, kappa
         )
-        center = np.argmin(np.abs(line_grid - RESONANCE_WAVELENGTH_M))
+        center = np.argmin(np.abs(line_grid - resonance_wavelength_m))
         peak = np.argmax(radiance)
         assert peak != center                       # maxima off-center
         assert radiance[peak] > 1.5 * radiance[center]  # visible dip
         # The reversed core saturates toward (below) the shell blackbody.
         planck_shell = blackbody_spectral_radiance_hz(
-            C / RESONANCE_WAVELENGTH_M, 5000.0
+            C / resonance_wavelength_m, 5000.0
         )
         assert radiance[center] <= planck_shell * (1 + 1e-9)
 
     def test_core_intensity_decreases_with_optical_depth(
-        self, make_state, model, line_grid
+        self, make_state, model, line_grid, resonance_wavelength_m
     ):
         # Acceptance criterion: raising the absorbing column strictly
         # dims the transmitted line core.
-        center = np.argmin(np.abs(line_grid - RESONANCE_WAVELENGTH_M))
+        center = np.argmin(np.abs(line_grid - resonance_wavelength_m))
         core_values = []
         taus = []
         for scale in [0.02, 0.1, 0.3, 1.0]:
