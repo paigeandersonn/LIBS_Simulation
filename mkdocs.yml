@@ -1,15 +1,42 @@
 site_name: libssim
+site_description: >-
+  Forward modeling of laser-induced breakdown spectroscopy (LIBS)
+  plasma emission — LTE physics, radiative transport, temporal gating,
+  and instrument response.
 
 theme:
   name: material
   palette:
-    primary: indigo
+    # light / dark toggle; both schemes share the indigo accent
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.top
+    - navigation.indexes
+    - search.suggest
+    - search.highlight
+    - toc.follow
+    - content.code.copy
 
 # README.md is for browsing docs/ on GitHub (conflicts with index.md);
-# herrera_k.pdf is the dissertation scan — keep it out of the built site.
+# the Literature PDFs are source scans — keep them out of the built site.
 exclude_docs: |
   README.md
-  herrera_k.pdf
+  Literature/
 
 plugins:
   - search
@@ -18,16 +45,59 @@ plugins:
         python:
           paths: [src]
           options:
-            show_root_heading: true
+            # --- docstrings ------------------------------------------
             docstring_style: numpy
+            docstring_section_style: table
+            merge_init_into_class: true
+            # --- signatures ------------------------------------------
+            separate_signature: true
+            show_signature_annotations: true
+            signature_crossrefs: true
+            line_length: 68
+            # --- structure -------------------------------------------
+            show_root_heading: true
+            show_root_full_path: false
+            show_symbol_type_heading: true
+            show_symbol_type_toc: true
+            members_order: source
+            filters: ["!^_"]
+            inherited_members: false
+            show_source: true
+
+# Math rendering: pymdownx.arithmatex (generic mode) marks up $...$ / $$...$$
+# LaTeX, and MathJax v3 typesets it in the browser. Without this block MkDocs
+# emits the LaTeX as raw text. polyfill.io is deliberately omitted (the service
+# was withdrawn in 2024); MathJax v3 needs no polyfill on current browsers.
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.arithmatex:
+      generic: true
+  - toc:
+      permalink: true
+
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
 
 nav:
   - Home: index.md
-  - API Reference: reference.md
+  - API Reference:
+      - Overview: reference.md
+      - Core: reference/core.md
+      - Atomic Data: reference/atomic.md
+      - Physics: reference/physics.md
+      - Transport: reference/transport.md
+      - Temporal: reference/temporal.md
+      - Instrument: reference/instrument.md
+      - Analysis: reference/analysis.md
+      - Validation: reference/validation.md
   - Project Docs:
       - Project Goal: project_goal.md
       - Development Rules: development_rules.md
       - Implementation Plan: implementation_plan.md
       - Architecture: architecture.md
       - Validation Strategy: validation_strategy.md
+      - Methods Outline: methods_outline.md
       - AI Instructions: ai_instructions.md

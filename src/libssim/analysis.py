@@ -1,21 +1,20 @@
-"""
-libssim.analysis
-================
-Plotting, comparison and sweep helpers for synthetic vs experimental
-spectra (Phase 4).
+r"""Plotting, comparison and sweep helpers for synthetic vs
+experimental spectra (Phase 4).
 
-Physical Context (Herrera 2008)
+Physical context (Herrera 2008)
 -------------------------------
 The MC-LIBS inverse method judges a synthetic spectrum against the
 experimental one with the linear correlation coefficient, Eq. 5-56,
 p. 122:
 
-    R = sum_i (x_i - <x>)(y_i - <y>)
-        / sqrt( sum_i (x_i - <x>)^2 * sum_i (y_i - <y>)^2 )
+$$
+R \;=\; \frac{\sum_i (x_i - \bar{x})(y_i - \bar{y})}
+{\sqrt{\sum_i (x_i - \bar{x})^{2}\, \sum_i (y_i - \bar{y})^{2}}}
+$$
 
 "the value of the correlation coefficient R determines the similarity
 between the experimental and synthetic spectrum" (p. 122; example
-R = 0.9913, Fig. 5-6). `correlation_coefficient` implements exactly
+$R = 0.9913$, Fig. 5-6). `correlation_coefficient` implements exactly
 this metric; `load_spectrum_csv` and `resample` bring experimental
 data onto the model grid so the comparison is well-posed.
 
@@ -247,6 +246,10 @@ def plot_spectra(
     wavelength_unit: str = "nm",
     ax: Any = None,
     title: Optional[str] = None,
+    wavelength_range: Optional[Sequence[float]] = None,
+    grid: bool = True,
+    save_path: Optional[Union[str, Path]] = None,
+    dpi: int = 150,
 ):
     """
     Overlay spectra on one axes (matplotlib required:
@@ -268,6 +271,14 @@ def plot_spectra(
         Target axes; a new figure is created when omitted.
     title : str, optional
         Axes title.
+    wavelength_range : (low, high), optional
+        Zoom window in `wavelength_unit`.
+    grid : bool, optional
+        Light grid for readability (default True).
+    save_path : str or Path, optional
+        Save the figure (PNG/PDF by extension, tight bounding box).
+    dpi : int, optional
+        Raster resolution for saving (default 150).
 
     Returns
     -------
@@ -313,7 +324,102 @@ def plot_spectra(
     ax.set_xlabel(f"wavelength ({wavelength_unit})")
     first_units = spectra[0].metadata.get("intensity_units", "intensity")
     ax.set_ylabel("normalized intensity" if normalize else first_units)
+    if wavelength_range is not None:
+        low, high = (float(v) for v in wavelength_range)
+        if not low < high:
+            raise ValueError("wavelength_range must satisfy low < high")
+        ax.set_xlim(low, high)
+    if grid:
+        ax.grid(True, alpha=0.3)
     if title:
         ax.set_title(title)
     ax.legend()
+    if save_path is not None:
+        ax.figure.savefig(save_path, dpi=dpi, bbox_inches="tight")
     return ax
+
+
+def plot_comparison(
+    synthetic: Spectrum,
+    experimental: Spectrum,
+    labels: Sequence[str] = ("synthetic", "experimental"),
+    wavelength_unit: str = "nm",
+    wavelength_range: Optional[Sequence[float]] = None,
+    title: Optional[str] = None,
+    save_path: Optional[Union[str, Path]] = None,
+    dpi: int = 150,
+):
+    """
+    Two-panel synthetic-vs-experimental comparison: overlay on top,
+    residual (synthetic - experimental) below.
+
+    Both spectra must share a wavelength grid (use `resample`) and,
+    for a meaningful residual, a common normalization
+    (validation.preprocessing.normalize). This is the standard
+    validation figure of the Phase 4 workflow.
+
+    Returns
+    -------
+    matplotlib.figure.Figure
+    """
+    try:
+        import matplotlib.pyplot as plt
+    except ImportError as exc:  # pragma: no cover - exercised without viz
+        raise ImportError(
+            "plotting requires matplotlib: pip install libssim[viz]"
+        ) from exc
+
+    if synthetic.wavelength_m.shape != experimental.wavelength_m.shape or not (
+        np.allclose(
+            synthetic.wavelength_m, experimental.wavelength_m, rtol=1e-12
+        )
+    ):
+        raise ValueError(
+            "spectra must share the same wavelength grid; use "
+            "analysis.resample first"
+        )
+    if len(labels) != 2:
+        raise ValueError("labels must contain exactly two entries")
+
+    unit = wavelength_unit.strip().lower()
+    if unit not in _UNIT_TO_M:
+        raise ValueError(
+            f"unknown wavelength_unit {wavelength_unit!r}; "
+            f"use one of {sorted(_UNIT_TO_M)}"
+        )
+    axis = synthetic.wavelength_m / _UNIT_TO_M[unit]
+
+    fig, (ax_top, ax_res) = plt.subplots(
+        2,
+        1,
+        sharex=True,
+        height_ratios=[3, 1],
+        figsize=(8, 6),
+        constrained_layout=True,
+    )
+    ax_top.plot(
+        axis, experimental.intensity, color="0.35", lw=1.0, label=labels[1]
+    )
+    ax_top.plot(axis, synthetic.intensity, lw=1.6, label=labels[0])
+    units = synthetic.metadata.get("intensity_units", "intensity")
+    ax_top.set_ylabel(units)
+    ax_top.grid(True, alpha=0.3)
+    ax_top.legend()
+    if title:
+        ax_top.set_title(title)
+
+    ax_res.plot(axis, synthetic.intensity - experimental.intensity, lw=1.0)
+    ax_res.axhline(0.0, color="0.5", lw=0.8)
+    ax_res.set_ylabel("residual")
+    ax_res.set_xlabel(f"wavelength ({wavelength_unit})")
+    ax_res.grid(True, alpha=0.3)
+
+    if wavelength_range is not None:
+        low, high = (float(v) for v in wavelength_range)
+        if not low < high:
+            raise ValueError("wavelength_range must satisfy low < high")
+        ax_res.set_xlim(low, high)
+
+    if save_path is not None:
+        fig.savefig(save_path, dpi=dpi, bbox_inches="tight")
+    return fig
