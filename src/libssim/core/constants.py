@@ -1,7 +1,4 @@
-"""
-libssim.core.constants
-======================
-Fundamental physical constants and derived conversion factors used
+"""Fundamental physical constants and derived conversion factors used
 throughout the LIBS forward model.
 
 These constants are centralized in one module to ensure consistency
@@ -28,6 +25,7 @@ context for each constant used in the model.
 | `KB_EV`      | k_B      | `KB / E`               | Boltzmann constant expressed in eV K⁻¹ (≈ 8.617333 × 10⁻⁵). Widely used in plasma spectroscopy because temperatures are frequently expressed in electronvolts. |
 | `C_NM_PS`    | —        | `C × 1e9 / 1e12`       | Speed of light expressed in nm ps⁻¹ (≈ 0.299792458). Practical unit for time-resolved spectroscopy and estimating light transit times across the plasma volume. |
 | `ALPHA`      | α        | `7.2973525693e-3`      | Fine-structure constant (dimensionless). Characterizes the strength of the electromagnetic interaction. Appears in higher-order corrections in atomic structure calculations. |
+
 Notes
 -----
 - All values are taken from CODATA 2018 / NIST recommendations.

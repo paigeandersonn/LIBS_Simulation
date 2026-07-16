@@ -1,78 +1,96 @@
-"""
-libssim.physics.continuum
-=========================
-Bremsstrahlung (free-free) and radiative-recombination (free-bound)
-continuum for LTE plasmas (Phase 2).
+r"""Bremsstrahlung (free-free) and radiative-recombination
+(free-bound) continuum for LTE plasmas (Phase 2).
 
-Physical Context (Herrera 2008)
+Physical context (Herrera 2008)
 -------------------------------
 The MC-LIBS radiative model decomposes the total absorption coefficient
 entering the radiative transfer equation (Eq. 5-44, p. 117) as
 Eq. 5-49, p. 119:
 
-    kappa'_nu = kappa_ff + kappa_fb + kappa_bb
+$$
+\kappa'_\nu \;=\; \kappa_{f\!f} + \kappa_{f\!b} + \kappa_{bb}
+$$
 
-The continuum members implemented here (bound-bound is emission.py):
+The continuum members implemented here (bound-bound is `emission`):
 
-- Free-free (inverse bremsstrahlung), Eq. 5-50, p. 119:
-      kappa_ff = [8*pi*e^6 / (3*m_e*h*c*(6*pi*m_e*k_B)^(1/2))]
-                 * (n_e / T^(1/2)) * z^2 * (G/nu^3)
-                 * (1 - exp(-h*nu/(k_B*T))) * sum_j n_i^j
-      = 3.7e8 [cgs] * (n_e/T^(1/2)) z^2 (G/nu^3) (1-e^(-h nu/kB T)) sum n_i
-- Free-bound (radiative recombination), Eq. 5-51, p. 120:
-      kappa_fb = [same prefactor] * (n_e / T^(1/2)) * z^2 * (xi_z/nu^3)
-                 * exp(h*nu/(k_B*T)) * (1 - exp(-h*nu/(k_B*T)))^2
-                 * sum_j n_i^j
-- Planck mean (ff + fb only, for the radiation-loss term q of Eq. 5-47,
-  p. 118), Eq. 5-46, p. 118:
-      kappa_mean = (128/27 * k_B)^(1/2) * (pi/m_e)^(3/2)
-                   * z^2 e^6 G / (h*sigma*c^3) * n_e/T^(7/2) * sum_j n_i^j
+**Free-free** (inverse bremsstrahlung; Eq. 5-50, p. 119; printed CGS
+coefficient $3.7\times10^{8}$):
 
-Under LTE the continuum emission follows Kirchhoff's law (source term of
-Eq. 5-44): epsilon_nu = kappa_nu * B_nu(T). This reproduces exactly the
-bracket structure of the line-to-continuum expression, Eq. 5-7, p. 101:
-epsilon_c proportional to [xi*(1 - e^(-h nu/kB T)) + G*e^(-h nu/kB T)],
-which is used as a consistency check in the unit tests.
+$$
+\kappa_{f\!f} \;=\;
+\frac{8\pi e^{6}}{3 m_e h c \sqrt{6\pi m_e k_B}}\;
+\frac{n_e}{T^{1/2}}\, z^{2}\, \frac{G}{\nu^{3}}
+\left(1 - e^{-h\nu/(k_B T)}\right) \sum_j n_i^{j}
+$$
 
-Documented Ambiguity (development_rules.md)
+**Free-bound** (radiative recombination; Eq. 5-51, p. 120):
+
+$$
+\kappa_{f\!b} \;=\; [\text{same prefactor}]\;
+\frac{n_e}{T^{1/2}}\, z^{2}\, \frac{\xi_z}{\nu^{3}}\,
+e^{h\nu/(k_B T)}
+\left(1 - e^{-h\nu/(k_B T)}\right)^{2} \sum_j n_i^{j}
+$$
+
+**Planck mean** (ff + fb only, for the radiation-loss term $q$ of
+Eq. 5-47, p. 118; Eq. 5-46, p. 118):
+
+$$
+\kappa_{\mathrm{mean}} \;=\;
+\sqrt{\tfrac{128}{27} k_B}\,
+\left(\frac{\pi}{m_e}\right)^{3/2}
+\frac{z^{2} e^{6} G}{h \sigma c^{3}}\,
+\frac{n_e}{T^{7/2}} \sum_j n_i^{j}
+$$
+
+Under LTE the continuum emission follows Kirchhoff's law (source term
+of Eq. 5-44): $\epsilon_\nu = \kappa_\nu B_\nu(T)$. This reproduces
+exactly the bracket structure of the line-to-continuum expression,
+Eq. 5-7, p. 101: $\epsilon_c \propto
+[\xi (1 - e^{-h\nu/k_B T}) + G e^{-h\nu/k_B T}]$, which is used as a
+consistency check in the unit tests.
+
+Documented ambiguity (development_rules.md)
 -------------------------------------------
-Eq. 5-50 as printed carries the factor "e^(h nu/kB T - 1)". This is a
-typographical error for (1 - exp(-h*nu/(k_B*T))), established three ways:
-(1) the printed prefactor is algebraically identical to the standard
-thermally-averaged free-free absorption (Rybicki & Lightman, Radiative
-Processes, Eq. 5.18b), whose practical CGS coefficient is exactly the
-"3.7e8 cgs" printed in Eq. 5-50 and whose exponential factor is
-(1 - e^(-h nu/kT)); (2) Kirchhoff's law then yields the free-free
-emission G*e^(-h nu/kT) term of Eq. 5-7, p. 101; (3) the printed form
-grows exponentially with frequency, which is unphysical for an
-absorption coefficient. The corrected factor is implemented. Eq. 5-51
-is implemented exactly as printed (its Kirchhoff image reproduces the
-xi-term of Eq. 5-7, confirming it).
+Eq. 5-50 as printed carries the factor "$e^{h\nu/k_B T - 1}$". This is
+a typographical error for $(1 - e^{-h\nu/(k_B T)})$, established three
+ways: (1) the printed prefactor is algebraically identical to the
+standard thermally-averaged free-free absorption (Rybicki & Lightman,
+Radiative Processes, Eq. 5.18b), whose practical CGS coefficient is
+exactly the "$3.7\times10^{8}$ cgs" printed in Eq. 5-50 and whose
+exponential factor is $(1 - e^{-h\nu/k T})$; (2) Kirchhoff's law then
+yields the free-free emission $G e^{-h\nu/k T}$ term of Eq. 5-7,
+p. 101; (3) the printed form grows exponentially with frequency, which
+is unphysical for an absorption coefficient. The corrected factor is
+implemented. Eq. 5-51 is implemented exactly as printed (its Kirchhoff
+image reproduces the $\xi$-term of Eq. 5-7, confirming it).
 
-Units and Conventions (SI throughout)
+Units and conventions (SI throughout)
 -------------------------------------
-Thesis formulas are Gaussian-CGS ("cgs" tags in Eqs. 5-50/5-51); the SI
-implementation replaces e^6 -> e^6/(4*pi*eps0)^3. Inputs: frequency Hz,
-temperature K, densities m^-3. Outputs: absorption coefficients m^-1;
-emission coefficient W m^-3 Hz^-1 sr^-1. The unit tests verify the SI
-prefactor against the printed 3.7e8 CGS coefficient.
+Thesis formulas are Gaussian-CGS ("cgs" tags in Eqs. 5-50/5-51); the
+SI implementation replaces $e^{6} \to e^{6}/(4\pi\varepsilon_0)^{3}$.
+Inputs: frequency Hz, temperature K, densities m$^{-3}$. Outputs:
+absorption coefficients m$^{-1}$; emission coefficient W m$^{-3}$
+Hz$^{-1}$ sr$^{-1}$. The unit tests verify the SI prefactor against
+the printed $3.7\times10^{8}$ CGS coefficient.
 
-Numerical Assumptions and Limitations
+Numerical assumptions and limitations
 -------------------------------------
-- Hydrogen-like Kramers-Unsold model: G (free-free Gaunt factor) and
-  xi (free-bound Biberman-like correction) are ~ unity and slowly
-  varying (thesis p. 118: "in most cases, the numerical value of G is
-  approximately unity"); both default to 1.0 and are caller-adjustable.
-- Two-stage plasma: ions are singly charged, z = 1 default (Eq. D-3
-  charge equilibrium, p. 274); z is exposed for generality and enters
-  as z^2 outside the ion sum, as printed.
-- The free-bound expression grows ~ e^(h nu/kB T) at photon energies far
-  above thermal — the Kramers-Unsold model is meaningful for h*nu below
-  and around the ionization edge (LIBS UV-VIS window); far-UV/X-ray
-  evaluation will overflow to inf rather than silently produce wrong
-  finite numbers.
+- Hydrogen-like Kramers-Unsold model: $G$ (free-free Gaunt factor)
+  and $\xi$ (free-bound Biberman-like correction) are ~ unity and
+  slowly varying (thesis p. 118: "in most cases, the numerical value
+  of G is approximately unity"); both default to 1.0 and are
+  caller-adjustable.
+- Two-stage plasma: ions are singly charged, $z = 1$ default
+  (Eq. D-3 charge equilibrium, p. 274); $z$ is exposed for generality
+  and enters as $z^{2}$ outside the ion sum, as printed.
+- The free-bound expression grows $\sim e^{h\nu/k_B T}$ at photon
+  energies far above thermal — the Kramers-Unsold model is meaningful
+  for $h\nu$ below and around the ionization edge (LIBS UV-VIS
+  window); far-UV/X-ray evaluation will overflow to inf rather than
+  silently produce wrong finite numbers.
 - exp terms use expm1 for accuracy in the Rayleigh-Jeans limit
-  (h*nu << k_B*T).
+  ($h\nu \ll k_B T$).
 
 References
 ----------
@@ -153,45 +171,52 @@ def free_free_absorption_coefficient(
     charge_number: float = 1.0,
     gaunt_factor: float = 1.0,
 ) -> float | NDArray[np.float64]:
-    """
-    Free-free (inverse bremsstrahlung) absorption coefficient kappa_ff
-    (m^-1), including stimulated emission.
+    r"""
+    Free-free (inverse bremsstrahlung) absorption coefficient
+    $\kappa_{f\!f}$ (m$^{-1}$), including stimulated emission.
 
     Herrera (2008), Eq. 5-50, p. 119, with the exponential factor
-    corrected to (1 - exp(-h*nu/(k_B*T))) — see module "Documented
-    Ambiguity":
+    corrected to $(1 - e^{-h\nu/(k_B T)})$ — see module *Documented
+    ambiguity*:
 
-        kappa_ff = C_K * (n_e * n_ion * z^2 * G / (T^(1/2) * nu^3))
-                   * (1 - exp(-h*nu/(k_B*T)))
+    $$
+    \kappa_{f\!f} \;=\; C_K\,
+    \frac{n_e\, n_{\mathrm{ion}}\, z^{2}\, G}{T^{1/2}\, \nu^{3}}
+    \left(1 - e^{-h\nu/(k_B T)}\right)
+    $$
 
-    C_K is the Kramers prefactor 8*pi*e^6/(3 m_e h c (6 pi m_e k_B)^(1/2))
-    in SI (printed CGS value 3.7e8).
+    $C_K$ is the Kramers prefactor
+    $8\pi e^{6} / (3 m_e h c \sqrt{6\pi m_e k_B})$ in SI (printed CGS
+    value $3.7\times10^{8}$).
 
     Parameters
     ----------
     frequency_hz : array_like of float
-        Photon frequency nu (Hz, > 0).
+        Photon frequency $\nu$ (Hz, > 0).
     temperature_K : array_like of float
         Plasma temperature (K, > 0).
     electron_density_m3, ion_density_m3 : array_like of float
-        n_e and the summed ion density sum_j n_i^j (m^-3, >= 0) — for a
-        multi-element plasma pass the total ion density from the Saha
-        balance (`IonizationBalance.total_ion_density_m3`).
+        $n_e$ and the summed ion density $\sum_j n_i^{j}$ (m$^{-3}$,
+        >= 0) — for a multi-element plasma pass the total ion density
+        from the Saha balance
+        (`IonizationBalance.total_ion_density_m3`).
     charge_number : float, optional
-        Effective ion charge z (default 1, singly ionized two-stage
-        plasma; enters as z^2 outside the ion sum, as printed).
+        Effective ion charge $z$ (default 1, singly ionized two-stage
+        plasma; enters as $z^{2}$ outside the ion sum, as printed).
     gaunt_factor : float, optional
-        Dimensionless free-free Gaunt factor G ~ 1 (thesis p. 118).
+        Dimensionless free-free Gaunt factor $G \approx 1$ (thesis
+        p. 118).
 
     Returns
     -------
     float or ndarray
-        kappa_ff in m^-1; broadcasts over the array inputs.
+        $\kappa_{f\!f}$ in m$^{-1}$; broadcasts over the array inputs.
 
     Notes
     -----
-    Low-frequency limit: (1 - e^(-x)) -> x gives kappa_ff ~ nu^-2
-    (computed with expm1 to preserve this limit accurately).
+    Low-frequency limit: $(1 - e^{-x}) \to x$ gives
+    $\kappa_{f\!f} \sim \nu^{-2}$ (computed with expm1 to preserve
+    this limit accurately).
     """
     nu = _as_positive("frequency_hz", frequency_hz)
     T = _as_positive("temperature_K", temperature_K)
@@ -223,17 +248,20 @@ def free_bound_absorption_coefficient(
     charge_number: float = 1.0,
     bound_free_correction: float = 1.0,
 ) -> float | NDArray[np.float64]:
-    """
-    Free-bound (radiative recombination) absorption coefficient kappa_fb
-    (m^-1), including stimulated emission.
+    r"""
+    Free-bound (radiative recombination) absorption coefficient
+    $\kappa_{f\!b}$ (m$^{-1}$), including stimulated emission.
 
     Herrera (2008), Eq. 5-51, p. 120, exactly as printed:
 
-        kappa_fb = C_K * (n_e * n_ion * z^2 * xi / (T^(1/2) * nu^3))
-                   * exp(h*nu/(k_B*T)) * (1 - exp(-h*nu/(k_B*T)))^2
+    $$
+    \kappa_{f\!b} \;=\; C_K\,
+    \frac{n_e\, n_{\mathrm{ion}}\, z^{2}\, \xi}{T^{1/2}\, \nu^{3}}\;
+    e^{h\nu/(k_B T)} \left(1 - e^{-h\nu/(k_B T)}\right)^{2}
+    $$
 
-    (identically (e^x - 1)*(1 - e^-x) with x = h*nu/k_B*T, the form used
-    internally via expm1 for numerical accuracy).
+    (identically $(e^{x} - 1)(1 - e^{-x})$ with $x = h\nu/k_B T$, the
+    form used internally via expm1 for numerical accuracy).
 
     Parameters
     ----------
@@ -241,20 +269,22 @@ def free_bound_absorption_coefficient(
     charge_number
         As in `free_free_absorption_coefficient`.
     bound_free_correction : float, optional
-        The dimensionless free-bound continuum correction factor xi_z of
-        Eq. 5-51 ("takes into account the electron structure of the atom
-        and usually assumes a value of unity", p. 120). Default 1.0.
+        The dimensionless free-bound continuum correction factor
+        $\xi_z$ of Eq. 5-51 ("takes into account the electron
+        structure of the atom and usually assumes a value of unity",
+        p. 120). Default 1.0.
 
     Returns
     -------
     float or ndarray
-        kappa_fb in m^-1.
+        $\kappa_{f\!b}$ in m$^{-1}$.
 
     Notes
     -----
-    Kirchhoff image: kappa_fb * B_nu = C_K*(2h/c^2)*n_e*n_i*z^2*xi/T^(1/2)
-    * (1 - e^(-h nu/kB T)) — the xi-term of Eq. 5-7, p. 101. Grows as
-    e^x at h*nu >> k_B*T (model validity limit; see module notes).
+    Kirchhoff image: $\kappa_{f\!b} B_\nu = C_K (2h/c^{2})\,
+    n_e n_i z^{2} \xi / T^{1/2} \cdot (1 - e^{-h\nu/k_B T})$ — the
+    $\xi$-term of Eq. 5-7, p. 101. Grows as $e^{x}$ at
+    $h\nu \gg k_B T$ (model validity limit; see module notes).
     """
     nu = _as_positive("frequency_hz", frequency_hz)
     T = _as_positive("temperature_K", temperature_K)
@@ -289,11 +319,12 @@ def continuum_absorption_coefficient(
     gaunt_factor: float = 1.0,
     bound_free_correction: float = 1.0,
 ) -> float | NDArray[np.float64]:
-    """
+    r"""
     Continuum part of the total absorption coefficient of Eq. 5-49,
-    p. 119 (Herrera 2008): kappa_ff + kappa_fb (m^-1).
+    p. 119 (Herrera 2008): $\kappa_{f\!f} + \kappa_{f\!b}$
+    (m$^{-1}$).
 
-    The bound-bound member kappa_bb of Eq. 5-49 is line physics
+    The bound-bound member $\kappa_{bb}$ of Eq. 5-49 is line physics
     (`emission.line_absorption_coefficient`) and is added by the
     radiative-transfer layer (Phase 3), keeping continuum and line
     responsibilities separate.
@@ -326,22 +357,33 @@ def continuum_emission_coefficient(
     gaunt_factor: float = 1.0,
     bound_free_correction: float = 1.0,
 ) -> float | NDArray[np.float64]:
-    """
-    LTE continuum emission coefficient epsilon_nu (W m^-3 Hz^-1 sr^-1).
+    r"""
+    LTE continuum emission coefficient $\epsilon_\nu$
+    (W m$^{-3}$ Hz$^{-1}$ sr$^{-1}$).
 
-    Kirchhoff's law applied to the continuum absorption — the LTE source
-    term of the radiative transfer equation, Eq. 5-44, p. 117
+    Kirchhoff's law applied to the continuum absorption — the LTE
+    source term of the radiative transfer equation, Eq. 5-44, p. 117
     (Herrera 2008):
 
-        epsilon_nu = (kappa_ff + kappa_fb) * B_nu(T)
+    $$
+    \epsilon_\nu \;=\;
+    (\kappa_{f\!f} + \kappa_{f\!b})\, B_\nu(T)
+    $$
 
     Analytically this equals
-        C_K*(2h/c^2) * n_e*n_i*z^2/T^(1/2)
-        * [G*exp(-h nu/kB T) + xi*(1 - exp(-h nu/kB T))],
+
+    $$
+    C_K\, \frac{2h}{c^{2}}\,
+    \frac{n_e n_i z^{2}}{T^{1/2}}
+    \left[G\, e^{-h\nu/k_B T} +
+    \xi \left(1 - e^{-h\nu/k_B T}\right)\right]
+    $$
+
     the bracket of the line-to-continuum expression Eq. 5-7, p. 101 —
-    free-free emission decays as e^(-h nu/kB T) while recombination
-    emission saturates, as observed in LIBS continua (thesis Ch. 3,
-    continuum = bremsstrahlung + radiative recombination).
+    free-free emission decays as $e^{-h\nu/k_B T}$ while
+    recombination emission saturates, as observed in LIBS continua
+    (thesis Ch. 3, continuum = bremsstrahlung + radiative
+    recombination).
 
     Parameters as in `continuum_absorption_coefficient`.
     """
@@ -367,35 +409,42 @@ def planck_mean_absorption_coefficient(
     charge_number: float = 1.0,
     gaunt_factor: float = 1.0,
 ) -> float | NDArray[np.float64]:
-    """
-    Planck mean absorption coefficient kappa_mean (m^-1), free-free +
-    free-bound only.
+    r"""
+    Planck mean absorption coefficient $\kappa_{\mathrm{mean}}$
+    (m$^{-1}$), free-free + free-bound only.
 
-    Herrera (2008), Eq. 5-46, p. 118:
+    Herrera (2008), Eq. 5-46, p. 118 (SI form; $\sigma$ is the
+    Stefan-Boltzmann constant):
 
-        kappa_mean = (128/27 * k_B)^(1/2) * (pi/m_e)^(3/2)
-                     * z^2 e^6 G / (h*sigma*c^3) * n_e/T^(7/2) * sum n_i
+    $$
+    \kappa_{\mathrm{mean}} \;=\;
+    \sqrt{\tfrac{128}{27} k_B}\,
+    \left(\frac{\pi}{m_e}\right)^{3/2}
+    \frac{z^{2} e^{6} G}{h \sigma c^{3}}\,
+    \frac{n_e}{T^{7/2}} \sum_j n_i^{j}
+    $$
 
-    (SI form; sigma is the Stefan-Boltzmann constant). Used with the
-    rough-approximation radiance (Eq. 5-45, p. 118) to evaluate the
-    radiation loss term q, Eq. 5-47, p. 118, of the plasma energy
-    balance — a Phase 3/4 consumer. "The use of kappa_mean ... implies
-    that the line structure of the spectrum is not included since
-    bound-bound transitions were neglected" (p. 118).
+    Used with the rough-approximation radiance (Eq. 5-45, p. 118) to
+    evaluate the radiation loss term $q$, Eq. 5-47, p. 118, of the
+    plasma energy balance — a Phase 3/4 consumer. "The use of
+    kappa_mean ... implies that the line structure of the spectrum is
+    not included since bound-bound transitions were neglected"
+    (p. 118).
 
     Parameters
     ----------
     temperature_K : array_like of float
         Plasma temperature (K, > 0).
     electron_density_m3, ion_density_m3 : array_like of float
-        n_e and summed ion density (m^-3, >= 0).
+        $n_e$ and summed ion density (m$^{-3}$, >= 0).
     charge_number, gaunt_factor : float, optional
-        Effective charge z and free-free Gaunt factor G (defaults 1).
+        Effective charge $z$ and free-free Gaunt factor $G$
+        (defaults 1).
 
     Returns
     -------
     float or ndarray
-        kappa_mean in m^-1.
+        $\kappa_{\mathrm{mean}}$ in m$^{-1}$.
     """
     T = _as_positive("temperature_K", temperature_K)
     n_e = _as_nonnegative("electron_density_m3", electron_density_m3)

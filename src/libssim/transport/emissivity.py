@@ -1,19 +1,18 @@
-"""
-libssim.transport.emissivity
-============================
-Per-zone spectral emission and absorption from Phase 2 physics
+r"""Per-zone spectral emission and absorption from Phase 2 physics
 (Phase 3 adapter layer).
 
-Physical Context (Herrera 2008)
+Physical context (Herrera 2008)
 -------------------------------
 The radiative transfer solution (Eq. 5-48, p. 119) needs, at every
 point of the plasma, the total absorption coefficient of Eq. 5-49,
 p. 119,
 
-    kappa'_nu = kappa_ff + kappa_fb + kappa_bb,
+$$
+\kappa'_\nu \;=\; \kappa_{f\!f} + \kappa_{f\!b} + \kappa_{bb},
+$$
 
-and — under LTE — the matching source term kappa'_nu * I_nu^b of the
-RTE (Eq. 5-44, p. 117), i.e. the emission coefficient. Because the
+and — under LTE — the matching source term $\kappa'_\nu I_\nu^{b}$ of
+the RTE (Eq. 5-44, p. 117), i.e. the emission coefficient. Because the
 onion zones are locally uniform, both are exactly the Phase 2
 single-point quantities, evaluated once per zone:
 
@@ -29,19 +28,20 @@ single-point quantities, evaluated once per zone:
   (`continuum`).
 
 `LTESpectralModel` composes those calls and returns, per zone, the
-arrays (epsilon_nu, kappa'_nu) on a fixed wavelength grid — transport
-adds no new local physics (architecture.md layering).
+arrays $(\epsilon_\nu, \kappa'_\nu)$ on a fixed wavelength grid —
+transport adds no new local physics (architecture.md layering).
 
-Units and Conventions
+Units and conventions
 ---------------------
 - Wavelength grid in meters (SI), strictly increasing.
-- epsilon_nu: W m^-3 Hz^-1 sr^-1 (per-frequency emission coefficient,
-  matching Phase 2); kappa'_nu: m^-1. Radiance is converted to
-  per-wavelength only when packing a `Spectrum` (radiative.py).
+- $\epsilon_\nu$: W m$^{-3}$ Hz$^{-1}$ sr$^{-1}$ (per-frequency
+  emission coefficient, matching Phase 2); $\kappa'_\nu$: m$^{-1}$.
+  Radiance is converted to per-wavelength only when packing a
+  `Spectrum` (`radiative`).
 - Line profiles are evaluated in the wavelength domain (widths from
   Ch. 3) and converted to per-Hz with the local Jacobian
-  P_nu = P_lambda * lambda^2 / c (narrow-line, consistent with
-  line_profiles.fwhm conversions).
+  $P_\nu = P_\lambda\, \lambda^{2} / c$ (narrow-line, consistent with
+  the `line_profiles` FWHM conversions).
 
 Implementation Decisions (documented per development_rules.md)
 --------------------------------------------------------------

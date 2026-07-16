@@ -1,9 +1,6 @@
-"""
-libssim.instrument.noise
-========================
-Detector noise models (Phase 4).
+r"""Detector noise models (Phase 4).
 
-Physical Context
+Physical context
 ----------------
 The thesis records spectra with an intensified CCD (Ch. 4); like any
 photon-counting chain the signal carries:
@@ -11,7 +8,7 @@ photon-counting chain the signal carries:
 - **shot noise** — Poisson statistics of the detected photoelectrons
   (variance = mean);
 - **readout noise** — additive Gaussian electronics noise, rms
-  sigma_read counts, independent of signal;
+  $\sigma_{\mathrm{read}}$ counts, independent of signal;
 - **dark / background offset** — a mean additive level (thermal dark
   counts, ambient background) that itself carries shot noise.
 
@@ -46,13 +43,14 @@ from ..core.spectrum import Spectrum
 
 @dataclass(frozen=True)
 class NoiseModel:
-    """
+    r"""
     Shot + readout + dark/background detector noise.
 
     Parameters
     ----------
     read_noise_rms_counts : float, optional
-        Gaussian readout rms sigma_read (counts, >= 0; default 0).
+        Gaussian readout rms $\sigma_{\mathrm{read}}$ (counts, >= 0;
+        default 0).
     dark_mean_counts : float, optional
         Mean dark level added to every sample (counts, >= 0;
         default 0). Carries shot noise.
@@ -65,8 +63,14 @@ class NoiseModel:
 
     Notes
     -----
-    Output = Poisson(signal + dark + background) + Normal(0, sigma_read)
-    per wavelength sample, mutually independent.
+    Per wavelength sample, mutually independent:
+
+    $$
+    \mathrm{output} \;=\;
+    \mathrm{Poisson}(\mathrm{signal} + \mathrm{dark} +
+    \mathrm{background})
+    + \mathcal{N}\!\left(0,\, \sigma_{\mathrm{read}}^{2}\right)
+    $$
     """
 
     read_noise_rms_counts: float = 0.0

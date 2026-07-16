@@ -1,25 +1,27 @@
-"""
-libssim.temporal.integrator
-===========================
-Gate-delay / gate-width temporal integration of the emission (Phase 4).
+r"""Gate-delay / gate-width temporal integration of the emission
+(Phase 4).
 
-Physical Context (Herrera 2008)
+Physical context (Herrera 2008)
 -------------------------------
 Time-resolved LIBS detection records the plasma emission through an
-intensified detector gate: the delay time t_delay is "the time between
-the initiation of the laser pulse and the beginning of the gate width"
-and the gate width t_gate is "the integration window during which the
-plasma emission is recorded" (pp. 46-47; symbols p. 23). The recorded
-signal is therefore the time integral of the instantaneous spectral
-radiance,
+intensified detector gate: the delay time $t_{\mathrm{delay}}$ is "the
+time between the initiation of the laser pulse and the beginning of
+the gate width" and the gate width $t_{\mathrm{gate}}$ is "the
+integration window during which the plasma emission is recorded"
+(pp. 46-47; symbols p. 23). The recorded signal is therefore the time
+integral of the instantaneous spectral radiance,
 
-    E_lambda = Integral_{t_delay}^{t_delay + t_gate} I_lambda(t) dt,
+$$
+E_\lambda \;=\;
+\int_{t_{\mathrm{delay}}}^{t_{\mathrm{delay}} + t_{\mathrm{gate}}}
+I_\lambda(t)\, \mathrm{d}t
+$$
 
 with units of spectral radiant exposure (J m^-2 m^-1 sr^-1). All the
 temporally-resolved studies of Chapters 6-7 vary exactly these two
 parameters.
 
-`GateIntegrator` evaluates I_lambda(t) by rendering the
+`GateIntegrator` evaluates $I_\lambda(t)$ by rendering the
 `PlasmaEvolution` snapshot at each quadrature node with the Phase 3
 transfer solver (quasi-static assumption, temporal/base.py) and sums
 with Gauss-Legendre (default) or trapezoid weights.
@@ -149,19 +151,22 @@ class GateIntegrator:
         n_time_nodes: int = 16,
         quadrature: str = "gauss",
     ) -> Spectrum:
-        """
+        r"""
         Emission integrated over the detector gate — the recorded LIBS
-        signal of pp. 46-47 (Herrera 2008).
+        signal of pp. 46-47 (Herrera 2008):
 
-            E_lambda = Integral_{t_d}^{t_d + t_g} I_lambda(t) dt
+        $$
+        E_\lambda \;=\; \int_{t_d}^{t_d + t_g} I_\lambda(t)\,
+        \mathrm{d}t
+        $$
 
         Parameters
         ----------
         gate_delay_s : float
-            t_delay (s, >= 0): time from plasma initiation to gate
-            opening.
+            $t_{\mathrm{delay}}$ (s, >= 0): time from plasma
+            initiation to gate opening.
         gate_width_s : float
-            t_gate (s, > 0): integration window length.
+            $t_{\mathrm{gate}}$ (s, > 0): integration window length.
         n_time_nodes : int, optional
             Quadrature nodes across the gate (default 16, >= 2).
             Increase for fast decays relative to the gate width.

@@ -1,7 +1,4 @@
-"""
-libssim.instrument.response
-===========================
-Composite instrument response pipeline (Phase 4).
+"""Composite instrument response pipeline (Phase 4).
 
 Chains the individual effects in their physical order:
 

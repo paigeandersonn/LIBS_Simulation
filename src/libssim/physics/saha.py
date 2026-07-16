@@ -1,42 +1,55 @@
-"""
-libssim.physics.saha
-====================
-Saha ionization balance with strict mass conservation (Phase 2).
+r"""Saha ionization balance with strict mass conservation (Phase 2).
 
-Physical Context (Herrera 2008)
+Physical context (Herrera 2008)
 -------------------------------
-Under LTE a single ionization temperature controls how each element j
-splits between its neutral (I) and singly-ionized (II) stages. The thesis
-gives the Saha equation twice, in identical physics:
+Under LTE a single ionization temperature controls how each element $j$
+splits between its neutral (I) and singly-ionized (II) stages. The
+thesis gives the Saha equation twice, in identical physics.
 
-- Eq. 5-2, p. 98 (CF-LIBS form):
-      n_e * n^II / n^I
-        = 2 * (2*pi*m_e*k_B*T_ion)^(3/2) / h^3
-          * (U^II(T)/U^I(T)) * exp(-(chi - Delta_chi)/(k_B*T_ion))
-- Eq. D-1, p. 274 (MC-LIBS form, Appendix D), defining the Saha function
-      s^j(T) = n_i^j * n_e / n_a^j
-             = 2 * (U_i^j/U_a^j) * (2*pi*m_e*k_B*T/h^2)^(3/2)
-               * exp(-(chi_j - Delta_chi)/(k_B*T))
-  where chi_j is the first ionization potential of constituent j and
-  Delta_chi the lowering of the ionization potential due to the electric
-  field of surrounding electrons (defined verbally on pp. 105 and 274).
+**CF-LIBS form** (Eq. 5-2, p. 98):
+
+$$
+\frac{n_e\, n^{II}}{n^{I}} \;=\;
+2\,\frac{(2\pi m_e k_B T_{\mathrm{ion}})^{3/2}}{h^{3}}\,
+\frac{U^{II}(T)}{U^{I}(T)}\,
+\exp\!\left(-\frac{\chi - \Delta\chi}{k_B T_{\mathrm{ion}}}\right)
+$$
+
+**MC-LIBS form** (Eq. D-1, p. 274, Appendix D), defining the Saha
+function:
+
+$$
+s^{j}(T) \;=\; \frac{n_i^{j}\, n_e}{n_a^{j}} \;=\;
+2\,\frac{U_i^{j}}{U_a^{j}}
+\left(\frac{2\pi m_e k_B T}{h^{2}}\right)^{3/2}
+\exp\!\left(-\frac{\chi_j - \Delta\chi}{k_B T}\right)
+$$
+
+where $\chi_j$ is the first ionization potential of constituent $j$
+and $\Delta\chi$ the lowering of the ionization potential due to the
+electric field of surrounding electrons (defined verbally on pp. 105
+and 274).
 
 Appendix D closes the system with the conservation constraints
 (pp. 274-276):
 
-- Eq. D-2, p. 274 : mass conservation per element,  n_i^j + n_a^j = n^j
-- Eq. D-3, p. 274 : charge equilibrium,             sum_j n_i^j = n_e
-- Eq. D-8, p. 275 : n_a^j = n^j * n_e / (s^j(T) + n_e)
-- Eq. D-9, pp. 275-276 : n_e = sum_j n^j * s^j(T) / (s^j(T) + n_e),
-  an implicit equation with "a unique positive solution"
-- Eq. D-10, p. 276: n_i^j = n^j * s^j(T) / (s^j(T) + n_e)
+- Eq. D-2, p. 274 — mass conservation per element:
+  $n_i^{j} + n_a^{j} = n^{j}$
+- Eq. D-3, p. 274 — charge equilibrium: $\sum_j n_i^{j} = n_e$
+- Eq. D-8, p. 275: $n_a^{j} = n^{j} n_e / (s^{j}(T) + n_e)$
+- Eq. D-9, pp. 275-276 — an implicit equation with "a unique positive
+  solution":
+  $n_e = \sum_j n^{j}\, s^{j}(T) / (s^{j}(T) + n_e)$
+- Eq. D-10, p. 276: $n_i^{j} = n^{j}\, s^{j}(T) / (s^{j}(T) + n_e)$
 
 LTE validity diagnostics from Chapter 5 are provided alongside:
 
-- Eq. 5-3, p. 99  : McWhirter criterion
-      n_e >> 1.6e12 * T_K^(1/2) * (Delta_E)^3   [cm^-3, Delta_E in eV]
-- Eq. 5-16, p. 106: particles in the Debye sphere
-      n_D = 1.72e9 * T_eV^(3/2) / n_e^(1/2)     [n_e in cm^-3]
+- Eq. 5-3, p. 99 — McWhirter criterion
+  ($\Delta E$ in eV, $n_e$ in cm$^{-3}$):
+  $n_e \gg 1.6\times10^{12}\, T_K^{1/2}\, (\Delta E)^{3}$
+- Eq. 5-16, p. 106 — particles in the Debye sphere
+  ($n_e$ in cm$^{-3}$):
+  $n_D = 1.72\times10^{9}\, T_{\mathrm{eV}}^{3/2} / n_e^{1/2}$
 
 Implementation Decisions (documented per development_rules.md)
 --------------------------------------------------------------
@@ -49,16 +62,18 @@ Implementation Decisions (documented per development_rules.md)
   then n_a^j = n^j - n_i^j from Eq. D-2, so n_a^j + n_i^j == n^j is exact
   in floating point (Phase 2 acceptance: relative error <= 1e-10; here
   it is identically 0).
-- Delta_chi: the thesis defines the quantity (pp. 105, 274) but gives no
-  formula. It therefore defaults to 0 and can be supplied explicitly.
-  `ionization_potential_lowering_ev` offers the standard Debye-shielding
-  estimate Delta_chi_z = z * e^2 / (4*pi*eps0*lambda_D) (Griem 1964;
-  Drawin & Felenbok 1965 = thesis ref [130]) as a documented extension
-  beyond the dissertation.
+- $\Delta\chi$: the thesis defines the quantity (pp. 105, 274) but
+  gives no formula. It therefore defaults to 0 and can be supplied
+  explicitly. `ionization_potential_lowering_ev` offers the standard
+  Debye-shielding estimate
+  $\Delta\chi_z = z e^{2} / (4\pi\varepsilon_0 \lambda_D)$
+  (Griem 1964; Drawin & Felenbok 1965 = thesis ref [130]) as a
+  documented extension beyond the dissertation.
 - Eq. D-9 is solved with `scipy.optimize.brentq` on
-  g(n_e) = n_e - sum_j n^j s^j/(s^j + n_e); g is strictly increasing with
-  g(0) < 0 < g(N_heavy), so the root is unique and bracketed — matching
-  the thesis statement of a unique positive solution.
+  $g(n_e) = n_e - \sum_j n^{j} s^{j}/(s^{j} + n_e)$; $g$ is strictly
+  increasing with $g(0) < 0 < g(N_{\mathrm{heavy}})$, so the root is
+  unique and bracketed — matching the thesis statement of a unique
+  positive solution.
 
 Units: strict SI internally (m^-3, K, J); ionization energies enter in
 eV (atomic-data convention) and are converted via `core.constants.EV`.
@@ -66,14 +81,16 @@ The thesis' practical CGS forms (Eqs. 5-3, 5-16) are implemented in SI
 from first principles and validated against the printed CGS coefficients
 in the unit tests.
 
-Numerical Assumptions and Limitations
+Numerical assumptions and limitations
 -------------------------------------
-- exp underflow of s^j(T) at very low T flushes to 0 -> fully neutral
-  limit (correct physics; acceptance: neutral fraction -> 1 as T -> 0).
-- n_e = 0 with s^j > 0 yields full ionization from Eqs. D-8/D-10; the
-  0/0 case (s^j = 0 and n_e = 0) resolves to the neutral limit.
-- Ions are assumed singly charged (z = 1) in charge equilibrium, as in
-  Eq. D-3.
+- exp underflow of $s^{j}(T)$ at very low $T$ flushes to 0 → fully
+  neutral limit (correct physics; acceptance: neutral fraction → 1 as
+  $T \to 0$).
+- $n_e = 0$ with $s^{j} > 0$ yields full ionization from
+  Eqs. D-8/D-10; the 0/0 case ($s^{j} = 0$ and $n_e = 0$) resolves to
+  the neutral limit.
+- Ions are assumed singly charged ($z = 1$) in charge equilibrium, as
+  in Eq. D-3.
 
 References
 ----------
@@ -119,14 +136,17 @@ def saha_factor(
     ionization_energy_ev: float,
     lowering_ev: float = 0.0,
 ) -> float | NDArray[np.float64]:
-    """
-    Saha function s(T) = n_i * n_e / n_a in m^-3.
+    r"""
+    Saha function $s(T) = n_i n_e / n_a$ in m$^{-3}$.
 
     Implements Herrera (2008) Eq. D-1, p. 274 (identically Eq. 5-2,
     p. 98):
 
-        s(T) = 2 * (U_II/U_I) * (2*pi*m_e*k_B*T / h^2)^(3/2)
-                 * exp(-(chi - Delta_chi) / (k_B*T))
+    $$
+    s(T) \;=\; 2\,\frac{U^{II}}{U^{I}}
+    \left(\frac{2\pi m_e k_B T}{h^{2}}\right)^{3/2}
+    \exp\!\left(-\frac{\chi - \Delta\chi}{k_B T}\right)
+    $$
 
     Parameters
     ----------
@@ -134,15 +154,15 @@ def saha_factor(
         Ionization temperature in Kelvin (> 0); under LTE equal to the
         single plasma temperature (p. 98).
     u_neutral, u_ion : array_like of float
-        Partition functions U^I(T) and U^II(T) of the neutral and
-        singly-ionized stages (dimensionless, > 0), e.g. from
+        Partition functions $U^{I}(T)$ and $U^{II}(T)$ of the neutral
+        and singly-ionized stages (dimensionless, > 0), e.g. from
         `partition.PartitionFunctionProvider`.
     ionization_energy_ev : float
-        First ionization potential chi in eV (> 0), converted to Joules
-        internally via `core.constants.EV`.
+        First ionization potential $\chi$ in eV (> 0), converted to
+        Joules internally via `core.constants.EV`.
     lowering_ev : float, optional
-        Lowering of the ionization potential Delta_chi in eV
-        (0 <= Delta_chi < chi). The thesis defines the quantity
+        Lowering of the ionization potential $\Delta\chi$ in eV
+        ($0 \le \Delta\chi < \chi$). The thesis defines the quantity
         (pp. 105, 274) without a formula; see
         `ionization_potential_lowering_ev` for the standard estimate.
         Default 0.
@@ -150,13 +170,14 @@ def saha_factor(
     Returns
     -------
     float or ndarray
-        s(T) in m^-3. Scalar inputs return a float.
+        $s(T)$ in m$^{-3}$. Scalar inputs return a float.
 
     Notes
     -----
-    - At low T the exponential underflows to 0 (fully neutral limit).
-    - s(T) is strictly increasing in T for fixed U-ratio, which drives
-      the monotonic-ionization acceptance criterion.
+    - At low $T$ the exponential underflows to 0 (fully neutral
+      limit).
+    - $s(T)$ is strictly increasing in $T$ for fixed $U$-ratio, which
+      drives the monotonic-ionization acceptance criterion.
     """
     T = _validate_temperature(temperature_K)
     U_a = np.asarray(u_neutral, dtype=np.float64)
@@ -190,19 +211,25 @@ def mcwhirter_minimum_electron_density_m3(
     temperature_K: ArrayLike,
     largest_gap_ev: float,
 ) -> float | NDArray[np.float64]:
-    """
-    Minimum electron density for LTE (McWhirter criterion), in m^-3.
+    r"""
+    Minimum electron density for LTE (McWhirter criterion), in
+    m$^{-3}$.
 
     Herrera (2008), Eq. 5-3, p. 99 (after Thorne [25]):
 
-        n_e >> 1.6e12 * T_K^(1/2) * (Delta_E)^3    [cm^-3]
+    $$
+    n_e \;\gg\; 1.6\times10^{12}\; T_K^{1/2}\,(\Delta E)^{3}
+    \quad [\mathrm{cm}^{-3}]
+    $$
 
-    converted to SI (x 1e6 -> 1.6e18 m^-3), with Delta_E the largest
-    transition energy gap considered, in eV.
+    converted to SI ($\times 10^{6} \to 1.6\times10^{18}$ m$^{-3}$),
+    with $\Delta E$ the largest transition energy gap considered, in
+    eV.
 
-    Returns the right-hand side; LTE requires the actual n_e to exceed
-    it by a comfortable margin (">>", i.e. a necessary, not sufficient,
-    condition — see implementation_plan.md Phase 2 gap check).
+    Returns the right-hand side; LTE requires the actual $n_e$ to
+    exceed it by a comfortable margin ("$\gg$", i.e. a necessary, not
+    sufficient, condition — see implementation_plan.md Phase 2 gap
+    check).
     """
     T = _validate_temperature(temperature_K)
     dE = float(largest_gap_ev)
@@ -219,15 +246,18 @@ def debye_length_m(
     temperature_K: ArrayLike,
     electron_density_m3: ArrayLike,
 ) -> float | NDArray[np.float64]:
-    """
-    Electron Debye shielding length lambda_D in meters:
+    r"""
+    Electron Debye shielding length $\lambda_D$ in meters:
 
-        lambda_D = sqrt(eps0 * k_B * T / (n_e * e^2))
+    $$
+    \lambda_D \;=\; \sqrt{\frac{\varepsilon_0 k_B T}{n_e e^{2}}}
+    $$
 
     The thesis uses Debye shielding through the Debye-sphere count of
     Eq. 5-16, p. 106 (and symbols p. 21) without printing the length
-    formula; this is the standard SI definition (Griem 1964) from which
-    Eq. 5-16 follows — the unit tests verify that correspondence.
+    formula; this is the standard SI definition (Griem 1964) from
+    which Eq. 5-16 follows — the unit tests verify that
+    correspondence.
     """
     T = _validate_temperature(temperature_K)
     n_e = np.asarray(electron_density_m3, dtype=np.float64)
@@ -245,21 +275,27 @@ def debye_sphere_particle_count(
     temperature_K: ArrayLike,
     electron_density_m3: ArrayLike,
 ) -> float | NDArray[np.float64]:
-    """
-    Number of electrons inside the Debye sphere, n_D (dimensionless).
+    r"""
+    Number of electrons inside the Debye sphere, $n_D$
+    (dimensionless).
 
-    Herrera (2008), Eq. 5-16, p. 106:
+    Herrera (2008), Eq. 5-16, p. 106 ($n_e$ in cm$^{-3}$):
 
-        n_D = 1.72e9 * T_eV^(3/2) / n_e^(1/2)     [n_e in cm^-3]
+    $$
+    n_D \;=\; 1.72\times10^{9}\;
+    \frac{T_{\mathrm{eV}}^{3/2}}{n_e^{1/2}}
+    $$
 
-    computed here in SI as n_D = (4/3)*pi*lambda_D^3*n_e, which
-    reproduces the printed CGS coefficient. n_D >> 1 is required for
-    collective (Debye-shielded) plasma behaviour and enters the quadratic
-    Stark width, Eq. 5-15, p. 106.
+    computed here in SI as
+    $n_D = \tfrac{4}{3}\pi \lambda_D^{3}\, n_e$, which reproduces the
+    printed CGS coefficient. $n_D \gg 1$ is required for collective
+    (Debye-shielded) plasma behaviour and enters the quadratic Stark
+    width, Eq. 5-15, p. 106.
 
-    Note: the thesis symbols list labels n_D in cm^-3 (p. 21); it is a
-    particle *count* and dimensionless — the documented ambiguity is
-    resolved in favour of the count (development_rules.md).
+    Note: the thesis symbols list labels $n_D$ in cm$^{-3}$ (p. 21);
+    it is a particle *count* and dimensionless — the documented
+    ambiguity is resolved in favour of the count
+    (development_rules.md).
     """
     T = _validate_temperature(temperature_K)
     n_e = np.asarray(electron_density_m3, dtype=np.float64)
@@ -277,25 +313,29 @@ def ionization_potential_lowering_ev(
     electron_density_m3: ArrayLike,
     charge_after: int = 1,
 ) -> float | NDArray[np.float64]:
-    """
+    r"""
     Debye-shielding estimate of the ionization-potential lowering
-    Delta_chi, in eV.
+    $\Delta\chi$, in eV.
 
-    The thesis uses Delta_chi in Eqs. 5-2 (p. 98), 5-13/5-14 (p. 105)
-    and D-1 (p. 274) and defines it as the "lowering of the ionization
-    potential of atoms due to the electric field of surrounding
-    electrons" (p. 274) — but provides no formula. Following
-    ai_instructions.md, the standard estimate of Griem (1964) /
-    Drawin & Felenbok (1965, thesis ref [130]) is implemented:
+    The thesis uses $\Delta\chi$ in Eqs. 5-2 (p. 98), 5-13/5-14
+    (p. 105) and D-1 (p. 274) and defines it as the "lowering of the
+    ionization potential of atoms due to the electric field of
+    surrounding electrons" (p. 274) — but provides no formula.
+    Following ai_instructions.md, the standard estimate of Griem
+    (1964) / Drawin & Felenbok (1965, thesis ref [130]) is
+    implemented:
 
-        Delta_chi_z = z * e^2 / (4*pi*eps0*lambda_D)
+    $$
+    \Delta\chi_z \;=\; \frac{z\, e^{2}}{4\pi\varepsilon_0 \lambda_D}
+    $$
 
-    with z = `charge_after`, the charge of the ion *produced* by the
-    ionization (1 for neutral -> singly ionized).
+    with $z$ = `charge_after`, the charge of the ion *produced* by
+    the ionization (1 for neutral → singly ionized).
 
-    Typical LIBS magnitude: ~0.05-0.2 eV at n_e ~ 1e22-1e24 m^-3 and
-    T ~ 1e4 K — small against chi of several eV, which is why
-    Delta_chi = 0 is an acceptable default in `saha_factor`.
+    Typical LIBS magnitude: ~0.05-0.2 eV at
+    $n_e \sim 10^{22}$-$10^{24}$ m$^{-3}$ and $T \sim 10^{4}$ K —
+    small against $\chi$ of several eV, which is why
+    $\Delta\chi = 0$ is an acceptable default in `saha_factor`.
     """
     z = int(charge_after)
     if z < 1:
@@ -314,7 +354,7 @@ def ionization_potential_lowering_ev(
 
 @dataclass(frozen=True)
 class IonizationBalance:
-    """
+    r"""
     Frozen result of a two-stage Saha balance at one plasma condition.
 
     Attributes
@@ -322,17 +362,19 @@ class IonizationBalance:
     temperature_K : float
         Temperature at which the balance was evaluated (K).
     electron_density_m3 : float
-        Electron density used in Eqs. D-8/D-10 (m^-3).
+        Electron density used in Eqs. D-8/D-10 (m$^{-3}$).
     neutral_density_m3 : Mapping[str, float]
-        n_a^j per element (m^-3) — Eq. D-2 rearranged (n^j - n_i^j).
+        $n_a^{j}$ per element (m$^{-3}$) — Eq. D-2 rearranged
+        ($n^{j} - n_i^{j}$).
     ion_density_m3 : Mapping[str, float]
-        n_i^j per element (m^-3) — Eq. D-10, p. 276.
+        $n_i^{j}$ per element (m$^{-3}$) — Eq. D-10, p. 276.
 
     Notes
     -----
-    Mass conservation n_a^j + n_i^j = n^j holds exactly by construction
-    (see `SahaSolver.balance`). Charge equilibrium (Eq. D-3) holds only
-    if n_e was obtained from `SahaSolver.solve_electron_density`.
+    Mass conservation $n_a^{j} + n_i^{j} = n^{j}$ holds exactly by
+    construction (see `SahaSolver.balance`). Charge equilibrium
+    (Eq. D-3) holds only if $n_e$ was obtained from
+    `SahaSolver.solve_electron_density`.
     """
 
     temperature_K: float
@@ -367,32 +409,36 @@ class IonizationBalance:
         return list(self.neutral_density_m3.keys())
 
     def elemental_density_m3(self, element: str) -> float:
-        """Total elemental density n^j = n_a^j + n_i^j (Eq. D-2, p. 274)."""
+        r"""Total elemental density $n^{j} = n_a^{j} + n_i^{j}$
+        (Eq. D-2, p. 274)."""
         return (
             self.neutral_density_m3[element] + self.ion_density_m3[element]
         )
 
     def ionization_fraction(self, element: str) -> float:
-        """n_i^j / n^j in [0, 1]; 0 for a vanishing element density."""
+        r"""$n_i^{j} / n^{j}$ in $[0, 1]$; 0 for a vanishing element
+        density."""
         total = self.elemental_density_m3(element)
         if total == 0.0:
             return 0.0
         return self.ion_density_m3[element] / total
 
     def neutral_fraction(self, element: str) -> float:
-        """n_a^j / n^j in [0, 1]; 1 for a vanishing element density."""
+        r"""$n_a^{j} / n^{j}$ in $[0, 1]$; 1 for a vanishing element
+        density."""
         return 1.0 - self.ionization_fraction(element)
 
     @property
     def total_ion_density_m3(self) -> float:
-        """sum_j n_i^j — left side of charge equilibrium Eq. D-3, p. 274."""
+        r"""$\sum_j n_i^{j}$ — left side of charge equilibrium
+        Eq. D-3, p. 274."""
         return float(sum(self.ion_density_m3.values()))
 
 
 @dataclass(frozen=True, eq=False)
 class SahaSolver:
-    """
-    Two-stage (I <-> II) Saha ionization solver per Herrera (2008),
+    r"""
+    Two-stage (I ↔ II) Saha ionization solver per Herrera (2008),
     Appendix D, pp. 274-276.
 
     Composition over inheritance: the solver owns a
@@ -402,18 +448,18 @@ class SahaSolver:
     Parameters
     ----------
     partition_provider : PartitionFunctionProvider
-        Source of U^I(T) and U^II(T) per element (Eq. D-1 numerator/
-        denominator).
+        Source of $U^{I}(T)$ and $U^{II}(T)$ per element (Eq. D-1
+        numerator/denominator).
     ionization_energies_ev : Mapping[str, float]
-        First ionization potential chi_j in eV per element label
-        (case-insensitive match), e.g. {"Al": 5.9858, "Fe": 7.9024}
+        First ionization potential $\chi_j$ in eV per element label
+        (case-insensitive match), e.g. ``{"Al": 5.9858, "Fe": 7.9024}``
         (NIST values; data injected, never hardcoded here —
         architecture.md).
     lowering_ev : float, optional
-        Constant Delta_chi in eV applied to every element (default 0;
-        see `ionization_potential_lowering_ev` for an estimate). The
-        thesis gives no prescription, so the simplest documented choice
-        is a caller-controlled constant.
+        Constant $\Delta\chi$ in eV applied to every element
+        (default 0; see `ionization_potential_lowering_ev` for an
+        estimate). The thesis gives no prescription, so the simplest
+        documented choice is a caller-controlled constant.
     """
 
     partition_provider: PartitionFunctionProvider
@@ -450,11 +496,12 @@ class SahaSolver:
     def saha_factor(
         self, element: str, temperature_K: ArrayLike
     ) -> float | NDArray[np.float64]:
-        """
-        s^j(T) of Eq. D-1, p. 274, for one element, in m^-3.
+        r"""
+        $s^{j}(T)$ of Eq. D-1, p. 274, for one element, in m$^{-3}$.
 
-        U^I and U^II are drawn from the partition provider (ion stages
-        1 and 2), chi_j from the registered ionization energies.
+        $U^{I}$ and $U^{II}$ are drawn from the partition provider
+        (ion stages 1 and 2), $\chi_j$ from the registered ionization
+        energies.
         """
         U_a = self.partition_provider.partition_function(
             element, 1, temperature_K
@@ -477,31 +524,36 @@ class SahaSolver:
         electron_density_m3: float,
         elemental_densities_m3: Mapping[str, float],
     ) -> IonizationBalance:
-        """
+        r"""
         Split each element between neutral and ion stages at given
-        (T, n_e), conserving elemental mass exactly.
+        $(T, n_e)$, conserving elemental mass exactly.
 
-        Implements Eqs. D-10 (p. 276) and D-2 (p. 274) of Herrera (2008):
+        Implements Eqs. D-10 (p. 276) and D-2 (p. 274) of
+        Herrera (2008):
 
-            n_i^j = n^j * s^j(T) / (s^j(T) + n_e)      (D-10)
-            n_a^j = n^j - n_i^j                        (D-2, rearranged)
+        $$
+        n_i^{j} = \frac{n^{j}\, s^{j}(T)}{s^{j}(T) + n_e}
+        \quad\text{(D-10)}, \qquad
+        n_a^{j} = n^{j} - n_i^{j}
+        \quad\text{(D-2, rearranged)}
+        $$
 
         Using D-2 for the neutral density (instead of evaluating D-8
-        independently) makes n_a^j + n_i^j == n^j exact in floating
-        point — the Phase 2 acceptance criterion (<= 1e-10 relative
-        error) is satisfied identically.
+        independently) makes $n_a^{j} + n_i^{j} = n^{j}$ exact in
+        floating point — the Phase 2 acceptance criterion
+        ($\le 10^{-10}$ relative error) is satisfied identically.
 
         Parameters
         ----------
         temperature_K : float
             Plasma temperature (K), > 0.
         electron_density_m3 : float
-            Electron density (m^-3), >= 0 — e.g. `PlasmaState.n_e`
+            Electron density (m$^{-3}$, >= 0) — e.g. `PlasmaState.n_e`
             (Stark-broadening measurement, Eqs. 5-17/5-19) or the
             self-consistent value from `solve_electron_density`.
         elemental_densities_m3 : Mapping[str, float]
-            n^j per element (m^-3, >= 0): total density of atoms + ions
-            of each element (thesis n_j, App. B/D).
+            $n^{j}$ per element (m$^{-3}$, >= 0): total density of
+            atoms + ions of each element (thesis $n_j$, App. B/D).
 
         Returns
         -------
@@ -509,9 +561,9 @@ class SahaSolver:
 
         Notes
         -----
-        Limits: s -> 0 (low T) gives the fully neutral plasma; n_e = 0
-        with s > 0 gives full ionization; s = 0 and n_e = 0 resolves to
-        neutral (the T -> 0 limit dominates).
+        Limits: $s \to 0$ (low $T$) gives the fully neutral plasma;
+        $n_e = 0$ with $s > 0$ gives full ionization; $s = 0$ and
+        $n_e = 0$ resolves to neutral (the $T \to 0$ limit dominates).
         """
         T = float(temperature_K)
         _validate_temperature(T)
@@ -553,27 +605,31 @@ class SahaSolver:
         temperature_K: float,
         elemental_densities_m3: Mapping[str, float],
     ) -> float:
-        """
+        r"""
         Self-consistent electron density from charge equilibrium.
 
         Solves Eq. D-9, pp. 275-276 of Herrera (2008):
 
-            n_e = sum_j n^j * s^j(T) / (s^j(T) + n_e)
+        $$
+        n_e \;=\; \sum_j \frac{n^{j}\, s^{j}(T)}{s^{j}(T) + n_e}
+        $$
 
         equivalent to the root of the strictly increasing function
 
-            g(n_e) = n_e - sum_j n^j s^j / (s^j + n_e),
+        $$
+        g(n_e) \;=\; n_e - \sum_j \frac{n^{j} s^{j}}{s^{j} + n_e}
+        $$
 
-        which has g(0) <= 0 <= g(N_heavy) — the "unique positive
-        solution" stated in the thesis. Solved with
+        which has $g(0) \le 0 \le g(N_{\mathrm{heavy}})$ — the "unique
+        positive solution" stated in the thesis. Solved with
         `scipy.optimize.brentq` (bracketing, guaranteed convergence,
-        rtol = 1e-14).
+        rtol = $10^{-14}$).
 
         Returns
         -------
         float
-            n_e in m^-3 (0 for a plasma cold enough that every s^j
-            underflows to 0, i.e. fully neutral).
+            $n_e$ in m$^{-3}$ (0 for a plasma cold enough that every
+            $s^{j}$ underflows to 0, i.e. fully neutral).
 
         Notes
         -----

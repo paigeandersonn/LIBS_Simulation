@@ -1,19 +1,20 @@
-"""
-libssim.transport.base
-======================
-Geometry abstractions for spatial radiative transport (Phase 3).
+r"""Geometry abstractions for spatial radiative transport (Phase 3).
 
-Physical Context (Herrera 2008)
+Physical context (Herrera 2008)
 -------------------------------
 The MC-LIBS radiative model solves the stationary radiative transfer
 equation in spherical coordinates (Eq. 5-44, p. 117) along straight
 rays. Its boundary-radiance solution, Eq. 5-48, p. 119, parameterizes
-each ray by the observation angle phi, i.e. by the chord at
+each ray by the observation angle $\phi$, i.e. by the chord at
 perpendicular distance ("impact parameter")
 
-    p = R * sqrt(1 - phi^2),        r(z) = sqrt(z^2 + p^2),
+$$
+p \;=\; R\sqrt{1 - \phi^{2}},
+\qquad
+r(z) \;=\; \sqrt{z^{2} + p^{2}},
+$$
 
-with z the coordinate along the ray. Radiative transfer therefore never
+with $z$ the coordinate along the ray. Radiative transfer therefore never
 needs the full 3-D field — only, per ray, the ordered sequence of path
 lengths through regions of locally uniform conditions.
 
@@ -116,26 +117,27 @@ class PlasmaGeometry(ABC):
     def path_segments(
         self, impact_parameter_m: float
     ) -> Tuple[PathSegment, ...]:
-        """
+        r"""
         Decompose the chord at the given impact parameter into ordered
         homogeneous segments (far boundary -> observer).
 
         Parameters
         ----------
         impact_parameter_m : float
-            Perpendicular distance p of the ray from the plasma center
-            (m), 0 <= p < outer_radius_m. This is the R*sqrt(1 - phi^2)
-            of Eq. 5-48, p. 119 (Herrera 2008).
+            Perpendicular distance $p$ of the ray from the plasma
+            center (m), $0 \le p < R$. This is the
+            $R\sqrt{1 - \phi^{2}}$ of Eq. 5-48, p. 119
+            (Herrera 2008).
 
         Returns
         -------
         tuple of PathSegment
             Ordered segments; their lengths sum to the full chord
-            length 2*sqrt(R^2 - p^2).
+            length $2\sqrt{R^{2} - p^{2}}$.
 
         Raises
         ------
         ValueError
             If the impact parameter is negative, non-finite, or lies
-            outside the plasma (p >= R).
+            outside the plasma ($p \ge R$).
         """

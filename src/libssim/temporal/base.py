@@ -1,14 +1,12 @@
-"""
-libssim.temporal.base
-=====================
-Contracts for time-dependent plasma descriptions (Phase 4).
+r"""Contracts for time-dependent plasma descriptions (Phase 4).
 
-Physical Context (Herrera 2008)
+Physical context (Herrera 2008)
 -------------------------------
 Time-resolved LIBS detection is parameterized by the delay time
-t_delay — "the time between the initiation of the laser pulse and the
-beginning of the gate width" — and the gate width t_gate, "the
-integration window during which the plasma emission is recorded"
+$t_{\mathrm{delay}}$ — "the time between the initiation of the laser
+pulse and the beginning of the gate width" — and the gate width
+$t_{\mathrm{gate}}$, "the integration window during which the plasma
+emission is recorded"
 (pp. 46-47; symbols p. 23). During that window the plasma cools and
 expands: the thesis evolves it with an energy-balance ODE for T
 (Eq. 5-35, p. 115; Appendix C) and a self-similar expansion for the

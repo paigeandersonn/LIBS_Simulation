@@ -1,7 +1,5 @@
-"""
-libssim.atomic.base
-===================
-Abstract base class defining the interface for atomic line databases.
+"""Abstract base class defining the interface for atomic line
+databases.
 
 This abstraction keeps the physics engine agnostic to the data source
 (CSV, NIST web, Blaise, etc.).

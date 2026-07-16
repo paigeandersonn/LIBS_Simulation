@@ -1,7 +1,5 @@
-"""
-libssim.core.spectrum
-=====================
-Spectrum dataclass for storing wavelength-intensity pairs plus rich metadata.
+"""Spectrum dataclass for storing wavelength-intensity pairs plus
+rich metadata.
 
 This is the primary output container of the forward model (after Phase 4
 instrumental effects) and the target for comparison in the MC-LIBS style
@@ -25,11 +23,13 @@ diffraction, aberrations — Ch. 3 & 4) and addition of noise.
 The Spectrum object is what gets compared to the "experimental spectrum"
 in the correlation coefficient R maximization of MC-LIBS (Ch. 5, Fig. 5-6).
 
-Example usage (after full pipeline)
------------------------------------
-spectrum = simulator.simulate(state)
-print(spectrum.metadata["R_correlation"])   # with experimental reference
-spectrum.to_dataframe().plot(x="wavelength_nm", y="intensity")
+Examples
+--------
+After the full pipeline:
+
+>>> spectrum = simulator.simulate(state)  # doctest: +SKIP
+>>> print(spectrum.metadata["R_correlation"])  # doctest: +SKIP
+>>> spectrum.to_dataframe().plot(x="wavelength_nm", y="intensity")  # doctest: +SKIP
 """
 
 from __future__ import annotations

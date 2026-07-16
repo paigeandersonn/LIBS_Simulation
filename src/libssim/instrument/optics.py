@@ -1,21 +1,24 @@
-"""
-libssim.instrument.optics
-=========================
-Collection-optics spectral efficiency and radiometric scaling (Phase 4).
+r"""Collection-optics spectral efficiency and radiometric scaling
+(Phase 4).
 
-Physical Context (Herrera 2008)
+Physical context (Herrera 2008)
 -------------------------------
 The measured line intensity is the physical emission scaled by the
 optical efficiency of the detection system, Eq. 5-9, p. 104:
 
-    I_ki,meas = F_det(lambda) * I_ki,
-    F_det(lambda) = F_rel(lambda) * F_abs        (Eqs. 5-9..5-11)
+$$
+I_{ki}^{\mathrm{meas}} \;=\; F_{\mathrm{det}}(\lambda)\, I_{ki},
+\qquad
+F_{\mathrm{det}}(\lambda) \;=\;
+F_{\mathrm{rel}}(\lambda)\, F_{\mathrm{abs}}
+\quad \text{(Eqs. 5-9..5-11)}
+$$
 
-with F_rel the wavelength-dependent *relative* efficiency (measured
-with calibrated lamps, Ch. 4, pp. 84-88) and F_abs a
-wavelength-independent absolute factor. CF-LIBS divides this response
-out of measured spectra (Eq. 5-10); the forward model applies it to
-synthetic ones — same physics, opposite direction.
+with $F_{\mathrm{rel}}$ the wavelength-dependent *relative* efficiency
+(measured with calibrated lamps, Ch. 4, pp. 84-88) and
+$F_{\mathrm{abs}}$ a wavelength-independent absolute factor. CF-LIBS
+divides this response out of measured spectra (Eq. 5-10); the forward
+model applies it to synthetic ones — same physics, opposite direction.
 
 `CollectionOptics` implements that scaling. The absolute factor is the
 user's calibration burden: it lumps collection etendue, transmission,
@@ -26,10 +29,11 @@ units.
 
 Units and Conventions
 ---------------------
-Pure per-wavelength scaling: output(lambda) = input(lambda) *
-F_rel(lambda) * F_abs. The relative curve is dimensionless (peak
-normalization is the caller's convention); metadata records what was
-applied.
+Pure per-wavelength scaling:
+$\mathrm{output}(\lambda) = \mathrm{input}(\lambda)\,
+F_{\mathrm{rel}}(\lambda)\, F_{\mathrm{abs}}$.
+The relative curve is dimensionless (peak normalization is the
+caller's convention); metadata records what was applied.
 
 References
 ----------
@@ -84,18 +88,19 @@ def tabulated_efficiency(
 
 @dataclass(frozen=True, eq=False)
 class CollectionOptics:
-    """
-    Detection-system response F_det(lambda) = F_rel(lambda) * F_abs
-    (Eqs. 5-9..5-11, p. 104).
+    r"""
+    Detection-system response
+    $F_{\mathrm{det}}(\lambda) = F_{\mathrm{rel}}(\lambda)\,
+    F_{\mathrm{abs}}$ (Eqs. 5-9..5-11, p. 104).
 
     Parameters
     ----------
     relative_efficiency : EfficiencyCurve, optional
-        F_rel(lambda), dimensionless (default: flat 1.0). Use
-        `tabulated_efficiency` for measured curves.
+        $F_{\mathrm{rel}}(\lambda)$, dimensionless (default:
+        flat 1.0). Use `tabulated_efficiency` for measured curves.
     absolute_factor : float, optional
-        F_abs plus any radiometric conversion (module docstring),
-        > 0, default 1.0.
+        $F_{\mathrm{abs}}$ plus any radiometric conversion (module
+        docstring), > 0, default 1.0.
     """
 
     relative_efficiency: Optional[EfficiencyCurve] = None
@@ -108,7 +113,8 @@ class CollectionOptics:
     def efficiency(
         self, wavelength_m: NDArray[np.float64]
     ) -> NDArray[np.float64]:
-        """F_det(lambda) on the given grid (dimensionless x F_abs)."""
+        r"""$F_{\mathrm{det}}(\lambda)$ on the given grid (the
+        dimensionless relative curve times $F_{\mathrm{abs}}$)."""
         grid = np.asarray(wavelength_m, dtype=np.float64)
         if self.relative_efficiency is None:
             relative = np.ones(grid.shape)
@@ -128,8 +134,9 @@ class CollectionOptics:
         return relative * self.absolute_factor
 
     def apply(self, spectrum: Spectrum) -> Spectrum:
-        """
-        Scale a spectrum by F_det(lambda) (Eq. 5-9 applied forward).
+        r"""
+        Scale a spectrum by $F_{\mathrm{det}}(\lambda)$ (Eq. 5-9
+        applied forward).
 
         Returns a new `Spectrum`; metadata gains the applied absolute
         factor and whether a relative curve was used.

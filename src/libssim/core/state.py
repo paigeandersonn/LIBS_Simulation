@@ -1,7 +1,4 @@
-"""
-libssim.core.state
-==================
-Immutable plasma state container (Phase 0 core).
+r"""Immutable plasma state container (Phase 0 core).
 
 This module defines the fundamental, frozen representation of a laser-induced
 plasma (LIP) at a given instant and spatial scale. It is deliberately minimal
@@ -9,18 +6,20 @@ and physics-agnostic so that downstream modules (Saha ionization, Boltzmann
 populations, radiative transfer, instrumental convolution) can derive all
 derived quantities.
 
-Physical Context (aligned with Herrera 2008 PhD thesis)
+Physical context (aligned with Herrera 2008 PhD thesis)
 -------------------------------------------------------
 The fields directly mirror the key variables used in:
-- CF-LIBS (Ch. 5): single T (LTE), n_e (Stark or Saha-Boltzmann), relative
-  concentrations C^s, assumption of stoichiometric ablation and optically thin
-  plasma.
+
+- CF-LIBS (Ch. 5): single $T$ (LTE), $n_e$ (Stark or Saha-Boltzmann),
+  relative concentrations $C^{s}$, assumption of stoichiometric ablation
+  and optically thin plasma.
 - MC-LIBS Monte Carlo simulated annealing (Ch. 5 pp. 112–121, App. B–D):
-  initial total number density n_j(r,t) per constituent j, plasma temperature T,
-  outer radius R, time t, and composition (relative fractions normalized to 1).
-  The thesis solves the inverse problem by optimizing these initials so that
-  synthetic spectra (including Doppler + Stark + self-absorption line profiles)
-  match experimental ones.
+  initial total number density $n_j(r,t)$ per constituent $j$, plasma
+  temperature $T$, outer radius $R$, time $t$, and composition (relative
+  fractions normalized to 1). The thesis solves the inverse problem by
+  optimizing these initials so that synthetic spectra (including
+  Doppler + Stark + self-absorption line profiles) match experimental
+  ones.
 
 All quantities are stored in strict SI units. Composition fractions are
 automatically normalized to sum exactly to 1.0 (with floating-point tolerance
@@ -52,58 +51,57 @@ import numpy as np
 
 @dataclass(frozen=True, slots=True)
 class PlasmaState:
-    """
+    r"""
     Frozen container for the minimal set of plasma parameters needed to
     initialize a forward LIBS simulation or MC-LIBS inverse problem.
 
-    All fields are validated in __post_init__. Composition is normalized
-    in-place using object.__setattr__ (required for frozen dataclass).
+    All fields are validated in ``__post_init__``. Composition is
+    normalized in place using ``object.__setattr__`` (required for a
+    frozen dataclass).
 
     Attributes
     ----------
     temperature_K : float
-        Plasma temperature in Kelvin. Under the LTE hypothesis central to
-        both CF-LIBS and MC-LIBS in Herrera (2008), this single value
-        represents T_e = T_exc = T_ion. Used for:
-        - Boltzmann level populations
-        - Saha ionization balance
-        - Planck blackbody continuum
-        - Doppler width calculations
-
+        Plasma temperature in Kelvin. Under the LTE hypothesis central
+        to both CF-LIBS and MC-LIBS in Herrera (2008), this single
+        value represents $T_e = T_{\mathrm{exc}} = T_{\mathrm{ion}}$.
+        Used for Boltzmann level populations, the Saha ionization
+        balance, the Planck blackbody continuum and Doppler width
+        calculations.
     electron_density_m3 : float
-        Electron number density n_e (m^{-3}).
-        - Determined experimentally via Stark broadening of Hα (Ch. 3,5, 6)
-        - Calculated via Saha solver in MC-LIBS (Ch. 5, App. D)
-        - Must satisfy 0 ≤ n_e ≤ total_density_m3
-
+        Electron number density $n_e$ (m$^{-3}$). Determined
+        experimentally via Stark broadening of H$\alpha$ (Ch. 3, 5,
+        6) or calculated via the Saha solver in MC-LIBS (Ch. 5,
+        App. D). Must satisfy
+        $0 \le n_e \le$ `total_density_m3`.
     total_density_m3 : float
-        Total particle number density (atoms + singly-charged ions + electrons)
-        in m^{-3}. Corresponds to n_tot or Σ n_j(r,t) in the thesis
-        radiative plasma expansion model (Ch. 5, App. B). Depends on radial coordinate and time
-
+        Total particle number density (atoms + singly-charged ions +
+        electrons) in m$^{-3}$. Corresponds to $n_{\mathrm{tot}}$ or
+        $\sum_j n_j(r,t)$ in the thesis radiative plasma expansion
+        model (Ch. 5, App. B); depends on radial coordinate and time.
     radius_m : float
-        Characteristic / outer plasma radius R (m). Used for:
-        - Spherical onion geometry (Phase 3)
-        - Radial expansion velocity model u(r,t) (App. A)
-
+        Characteristic / outer plasma radius $R$ (m). Used for the
+        spherical onion geometry (Phase 3) and the radial expansion
+        velocity model $u(r,t)$ (App. A).
     time_s : float
         Time since laser ablation (reference epoch) in seconds.
-        Enables temporal integration over experimental gate width t_gate
-        and delay times t_delay (Ch. 6–7 temporally-resolved studies).
-
+        Enables temporal integration over experimental gate width
+        $t_{\mathrm{gate}}$ and delay times $t_{\mathrm{delay}}$
+        (Ch. 6–7 temporally-resolved studies).
     composition : Mapping[str, float]
-        Relative abundance fractions for each species (element or isotope label).
-        Keys: "Ce", "Al", "Pu-239", etc.
-        Values are automatically normalized so Σ fractions == 1.0 exactly
-        (within float precision). This matches the "relative concentration
-        values" computed and validated against certified standards throughout
-        Chapters 6 and 7.
+        Relative abundance fractions for each species (element or
+        isotope label). Keys: ``"Ce"``, ``"Al"``, ``"Pu-239"``, etc.
+        Values are automatically normalized so $\sum$ fractions = 1.0
+        exactly (within float precision). This matches the "relative
+        concentration values" computed and validated against
+        certified standards throughout Chapters 6 and 7.
 
     Raises
     ------
     ValueError
         If any physical invariant is violated (negative temperature,
-        n_e > n_tot, non-positive composition sum, etc.).
+        $n_e > n_{\mathrm{tot}}$, non-positive composition sum,
+        etc.).
     """
 
     temperature_K: float

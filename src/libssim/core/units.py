@@ -1,12 +1,9 @@
-"""
-libssim.core.units
-==================
-SI unit conversion utilities for LIBS plasma modeling.
+"""SI unit conversion utilities for LIBS plasma modeling.
 
 All functions are pure, side-effect free, and vectorized where it makes
 sense (accept float or numpy array).
 
-These conversions bridge common spectroscopy units (nm, eV, cm^{-3})
+These conversions bridge common spectroscopy units (nm, eV, cm$^{-3}$)
 to the strict SI units used internally by PlasmaState, Saha solver,
 line profile calculations, etc.
 
@@ -15,7 +12,8 @@ Physical motivation (from Herrera 2008)
 - Wavelengths are almost always reported in nm in LIBS spectra (220-700 nm range
   in the thesis experimental work).
 - Energies in eV for atomic levels (NIST/Blaise databases).
-- Number densities in cm^{-3} in older literature and many tables; SI uses m^{-3}.
+- Number densities in cm$^{-3}$ in older literature and many tables;
+  SI uses m$^{-3}$.
 - Temperature conversions between eV and K appear in Saha-Boltzmann plots
   and LTE validation.
 
@@ -95,7 +93,7 @@ def m_to_wavenumber(wavelength_m: ArrayLike) -> np.ndarray:
 
 
 def frequency_to_ev(frequency_hz: ArrayLike) -> np.ndarray:
-    """Convert frequency (Hz) to energy (eV) using E = h*nu."""
+    r"""Convert frequency (Hz) to energy (eV) using $E = h\nu$."""
     from .constants import H
     return np.asarray(frequency_hz) * H / EV
 

@@ -1,29 +1,28 @@
-"""
-libssim.transport.geometry
-==========================
-Spherical onion plasma geometry (Phase 3).
+r"""Spherical onion plasma geometry (Phase 3).
 
-Physical Context (Herrera 2008)
+Physical context (Herrera 2008)
 -------------------------------
 The MC-LIBS plasma is a sphere with radially varying conditions: the
 model prescribes parabolic initial profiles for temperature and number
 density (Eqs. 5-36 and 5-37, p. 116),
 
-    T(r, 0)   = T_0   * (1 - k_1 * r^2)
-    n_j(r, 0) = n_0^j * (1 - k_2 * r^2)
+$$
+T(r, 0) = T_0 \left(1 - k_1 r^{2}\right), \qquad
+n_j(r, 0) = n_0^{j} \left(1 - k_2 r^{2}\right)
+$$
 
 with per-point Saha closure for the electron/atom/ion densities
 (Eqs. 5-38/5-39/5-40, p. 116 — the Appendix D system implemented by
-`physics.saha.SahaSolver`), and boundary radius R between 0.1 and
+`physics.saha.SahaSolver`), and boundary radius $R$ between 0.1 and
 0.5 cm after LTE is established (p. 116). Appendix B (Eqs. B-1..B-9,
 pp. 267-269) evolves these profiles self-similarly in time — a Phase 4
 (temporal) concern; this module represents one static snapshot.
 
-`SphericalOnion` discretizes the continuous radial profiles into N
+`SphericalOnion` discretizes the continuous radial profiles into $N$
 concentric shells ("zones"), each a locally uniform `PlasmaState`. The
 chord decomposition needed by the transfer solution Eq. 5-48, p. 119
-(rays at impact parameter p, r(z) = sqrt(z^2 + p^2)) becomes exact
-per-shell path lengths from z_k = sqrt(R_k^2 - p^2).
+(rays at impact parameter $p$, $r(z) = \sqrt{z^{2} + p^{2}}$) becomes
+exact per-shell path lengths from $z_k = \sqrt{R_k^{2} - p^{2}}$.
 
 Ownership of radial information (documented design decision)
 -------------------------------------------------------------
@@ -195,14 +194,17 @@ class SphericalOnion(PlasmaGeometry):
         saha_solver: SahaSolver,
         time_s: float = 0.0,
     ) -> "SphericalOnion":
-        """
+        r"""
         Build an onion from the thesis' parabolic initial profiles.
 
         Samples Eqs. 5-36 and 5-37, p. 116 (Herrera 2008) at the
         mid-radius of each of `n_zones` equal-thickness shells,
 
-            T_i   = T_0   * (1 - k_1 * r_mid^2)
-            n_j,i = n_0^j * (1 - k_2 * r_mid^2)
+        $$
+        T_i = T_0 \left(1 - k_1 r_{\mathrm{mid}}^{2}\right),
+        \qquad
+        n_{j,i} = n_0^{j} \left(1 - k_2 r_{\mathrm{mid}}^{2}\right)
+        $$
 
         and closes each zone's electron density self-consistently with
         the Saha charge equilibrium, Eq. 5-38, p. 116 (identically
@@ -212,16 +214,18 @@ class SphericalOnion(PlasmaGeometry):
         Parameters
         ----------
         center_temperature_K : float
-            T_0 at the plasma center (K, > 0).
+            $T_0$ at the plasma center (K, > 0).
         temperature_gradient_k1, density_gradient_k2 : float
-            The k_1, k_2 coefficients of Eqs. 5-36/5-37 (m^-2, >= 0),
-            "dependent on the gradient desired" (p. 116). Both profiles
-            must stay positive inside R: k * R^2 < 1 is enforced.
+            The $k_1$, $k_2$ coefficients of Eqs. 5-36/5-37
+            (m$^{-2}$, >= 0), "dependent on the gradient desired"
+            (p. 116). Both profiles must stay positive inside $R$:
+            $k R^{2} < 1$ is enforced.
         center_densities_m3 : Mapping[str, float]
-            n_0^j per element at the center (m^-3, > 0) — total heavy
-            (atom + ion) densities, the n_j of Eq. 5-37 / App. B.
+            $n_0^{j}$ per element at the center (m$^{-3}$, > 0) —
+            total heavy (atom + ion) densities, the $n_j$ of
+            Eq. 5-37 / App. B.
         outer_radius_m : float
-            Plasma boundary R (m, > 0); thesis range 0.1-0.5 cm
+            Plasma boundary $R$ (m, > 0); thesis range 0.1-0.5 cm
             (p. 116) is typical but not enforced.
         n_zones : int
             Number of equal-thickness shells (>= 1). Equal thickness is

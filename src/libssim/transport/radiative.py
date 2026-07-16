@@ -1,51 +1,62 @@
-"""
-libssim.transport.radiative
-===========================
-Line-of-sight radiative transfer through a zoned plasma (Phase 3).
+r"""Line-of-sight radiative transfer through a zoned plasma (Phase 3).
 
-Physical Context (Herrera 2008)
+Physical context (Herrera 2008)
 -------------------------------
-The stationary radiative transfer equation in spherical coordinates,
-Eq. 5-44, p. 117,
+The stationary radiative transfer equation in spherical coordinates
+(Eq. 5-44, p. 117),
 
-    phi dI_nu/dr + ((1-phi^2)/r) dI_nu/dphi + kappa'_nu I_nu
-        = kappa'_nu I_nu^b,
+$$
+\phi\,\frac{\partial I_\nu}{\partial r}
++ \frac{1-\phi^{2}}{r}\,\frac{\partial I_\nu}{\partial \phi}
++ \kappa'_\nu I_\nu \;=\; \kappa'_\nu I_\nu^{b}
+$$
 
 has the boundary-radiance solution Eq. 5-48, p. 119 ("detailed
-approximation"): along the ray at impact parameter p,
+approximation"): along the ray at impact parameter $p$,
 
-    I_nu(R, phi) = Integral dz K(r(z))
-                   * exp( - Integral_z ds kappa'_nu(r(s)) ),
+$$
+I_\nu(R, \phi) \;=\; \int \mathrm{d}z\; K(r(z))\,
+\exp\!\left(-\int_z \mathrm{d}s\; \kappa'_\nu(r(s))\right)
+$$
 
-with source K = kappa'_nu * I_nu^b (LTE) and the boundary condition
-that no radiation enters the plasma from outside (p. 118). For a
-geometry made of homogeneous zones (base.py), the exact solution over
-one segment of length L with constant epsilon_nu, kappa'_nu is
+with source $K = \kappa'_\nu I_\nu^{b}$ (LTE) and the boundary
+condition that no radiation enters the plasma from outside (p. 118).
+For a geometry made of homogeneous zones (`base`), the exact solution
+over one segment of length $L$ with constant $\epsilon_\nu$,
+$\kappa'_\nu$ is
 
-    I_out = I_in * exp(-kappa*L) + S * (1 - exp(-kappa*L)),
-    S = epsilon_nu / kappa'_nu  (= I_nu^b under LTE, Kirchhoff),
+$$
+I_{\mathrm{out}} \;=\; I_{\mathrm{in}}\, e^{-\kappa L}
++ S \left(1 - e^{-\kappa L}\right),
+\qquad
+S = \frac{\epsilon_\nu}{\kappa'_\nu}
+\;\; (= I_\nu^{b} \text{ under LTE, Kirchhoff})
+$$
 
 so walking the ordered segments evaluates Eq. 5-48 *analytically* —
-no ODE stepping, no dz discretization. This is what makes the
-line-of-sight integration numerically stable (Phase 3 acceptance
+no ODE stepping, no $\mathrm{d}z$ discretization. This is what makes
+the line-of-sight integration numerically stable (Phase 3 acceptance
 criterion): expm1 keeps the optically thin limit exact to first order
-(I += epsilon*L) and the optically thick limit saturates cleanly at
-S = I_nu^b — the blackbody ceiling of the self-absorption discussion,
-Eq. 3-10, p. 55 (I = B * (1 - exp(-kappa*l)) for a uniform medium,
-reproduced exactly by a one-zone geometry).
+($I \mathrel{+}= \epsilon L$) and the optically thick limit saturates
+cleanly at $S = I_\nu^{b}$ — the blackbody ceiling of the
+self-absorption discussion, Eq. 3-10, p. 55
+($I = B\,(1 - e^{-\kappa l})$ for a uniform medium, reproduced
+exactly by a one-zone geometry).
 
 Self-absorption and self-reversal (Ch. 3, pp. 53-54) emerge from the
 same update: an optically thick line core saturates toward the *local*
 blackbody radiance of the outer, cooler zones, producing the central
 dip of Fig. 3-3 — the Phase 3 acceptance behaviour.
 
-Units and Conventions
+Units and conventions
 ---------------------
-- Internal radiance is per-frequency: W m^-2 Hz^-1 sr^-1 (the thesis'
-  I_nu, CGS erg s^-1 cm^-2 Hz^-1 sr^-1, in SI).
+- Internal radiance is per-frequency: W m$^{-2}$ Hz$^{-1}$ sr$^{-1}$
+  (the thesis' $I_\nu$, CGS erg s$^{-1}$ cm$^{-2}$ Hz$^{-1}$
+  sr$^{-1}$, in SI).
 - `emergent_spectrum` converts to per-wavelength radiance
-  (W m^-2 m^-1 sr^-1) with the c/lambda^2 Jacobian when packing the
-  Phase 0 `Spectrum` container; units are recorded in the metadata.
+  (W m$^{-2}$ m$^{-1}$ sr$^{-1}$) with the $c/\lambda^{2}$ Jacobian
+  when packing the Phase 0 `Spectrum` container; units are recorded
+  in the metadata.
 - Spatially *resolved* spectra: `emergent_radiance` at one impact
   parameter. Spatially *integrated* spectra (the thesis' default
   measurement mode): `disk_integrated_radiance`, the area-weighted
@@ -102,26 +113,27 @@ def optical_depth(
     segments: Sequence[PathSegment],
     kappa_zones: NDArray[np.float64],
 ) -> NDArray[np.float64]:
-    """
-    Optical depth tau_nu along a line of sight.
+    r"""
+    Optical depth $\tau_\nu$ along a line of sight.
 
     The exponent of Eq. 5-48, p. 119 (Herrera 2008) over the full
-    chord: tau_nu = sum_segments kappa'_nu(zone) * L. Increasing tau in
-    the line core is what drives the transmitted-intensity acceptance
-    criterion.
+    chord: $\tau_\nu = \sum_{\mathrm{segments}} \kappa'_\nu
+    (\mathrm{zone}) \cdot L$. Increasing $\tau$ in the line core is
+    what drives the transmitted-intensity acceptance criterion.
 
     Parameters
     ----------
     segments : sequence of PathSegment
-        From `PlasmaGeometry.path_segments` (order irrelevant for tau).
+        From `PlasmaGeometry.path_segments` (order irrelevant for
+        $\tau$).
     kappa_zones : ndarray, shape (n_zones, n_wavelengths)
-        Per-zone kappa'_nu (m^-1), e.g. from
+        Per-zone $\kappa'_\nu$ (m$^{-1}$), e.g. from
         `LTESpectralModel.geometry_properties`.
 
     Returns
     -------
     ndarray, shape (n_wavelengths,)
-        tau_nu (dimensionless).
+        $\tau_\nu$ (dimensionless).
     """
     kap = np.asarray(kappa_zones, dtype=np.float64)
     if kap.ndim != 2:
@@ -137,19 +149,25 @@ def emergent_radiance(
     epsilon_zones: NDArray[np.float64],
     kappa_zones: NDArray[np.float64],
 ) -> NDArray[np.float64]:
-    """
+    r"""
     Spectral radiance leaving the plasma along one line of sight,
-    I_nu (W m^-2 Hz^-1 sr^-1).
+    $I_\nu$ (W m$^{-2}$ Hz$^{-1}$ sr$^{-1}$).
 
     Evaluates Eq. 5-48, p. 119 (Herrera 2008) exactly for piecewise
-    homogeneous zones: for each segment, in far-boundary -> observer
+    homogeneous zones: for each segment, in far-boundary → observer
     order,
 
-        I <- I * exp(-tau_seg) + S * (1 - exp(-tau_seg)),
-        tau_seg = kappa'_nu * L,   S = epsilon_nu / kappa'_nu,
+    $$
+    I \leftarrow I\, e^{-\tau_{\mathrm{seg}}}
+    + S \left(1 - e^{-\tau_{\mathrm{seg}}}\right),
+    \qquad
+    \tau_{\mathrm{seg}} = \kappa'_\nu L, \quad
+    S = \frac{\epsilon_\nu}{\kappa'_\nu}
+    $$
 
-    starting from I = 0 (no radiation enters the plasma, p. 118). The
-    kappa'_nu = 0 limit is handled exactly as I <- I + epsilon_nu * L.
+    starting from $I = 0$ (no radiation enters the plasma, p. 118).
+    The $\kappa'_\nu = 0$ limit is handled exactly as
+    $I \leftarrow I + \epsilon_\nu L$.
 
     Parameters
     ----------
@@ -157,21 +175,23 @@ def emergent_radiance(
         Ordered decomposition of the ray
         (`PlasmaGeometry.path_segments`).
     epsilon_zones, kappa_zones : ndarray, shape (n_zones, n_wavelengths)
-        Per-zone emission coefficient (W m^-3 Hz^-1 sr^-1) and total
-        absorption coefficient (m^-1).
+        Per-zone emission coefficient (W m$^{-3}$ Hz$^{-1}$
+        sr$^{-1}$) and total absorption coefficient (m$^{-1}$).
 
     Returns
     -------
     ndarray, shape (n_wavelengths,)
-        Emergent I_nu.
+        Emergent $I_\nu$.
 
     Notes
     -----
     Numerical stability (acceptance criterion): the update is the
     analytic segment solution, monotone and bounded —
-    min(I_in, S) <= I_out <= max(I_in, S) — for any tau in [0, inf);
-    expm1 keeps tau -> 0 exact to first order and tau -> inf saturates
-    at S (the blackbody ceiling of Eq. 3-10, p. 55).
+    $\min(I_{\mathrm{in}}, S) \le I_{\mathrm{out}} \le
+    \max(I_{\mathrm{in}}, S)$ — for any $\tau \in [0, \infty)$;
+    expm1 keeps $\tau \to 0$ exact to first order and
+    $\tau \to \infty$ saturates at $S$ (the blackbody ceiling of
+    Eq. 3-10, p. 55).
     """
     eps, kap = _validate_zone_arrays(segments, epsilon_zones, kappa_zones)
 
@@ -199,33 +219,37 @@ def disk_integrated_radiance(
     kappa_zones: NDArray[np.float64],
     n_impact: int = 64,
 ) -> NDArray[np.float64]:
-    """
+    r"""
     Area-averaged radiance over the projected plasma disk
-    (W m^-2 Hz^-1 sr^-1).
+    (W m$^{-2}$ Hz$^{-1}$ sr$^{-1}$).
 
-        <I_nu> = (2 / R^2) * Integral_0^R I_nu(p) * p dp
+    $$
+    \langle I_\nu \rangle \;=\;
+    \frac{2}{R^{2}} \int_0^R I_\nu(p)\, p\, \mathrm{d}p
+    $$
 
     — the spatially *integrated* observation mode of the thesis
     measurements (Ch. 6), as opposed to the spatially resolved
-    I_nu(p) of `emergent_radiance`. Evaluated with Gauss-Legendre
-    quadrature over p in (0, R); interior nodes only, so the p = R
-    tangent ray is never requested.
+    $I_\nu(p)$ of `emergent_radiance`. Evaluated with Gauss-Legendre
+    quadrature over $p \in (0, R)$; interior nodes only, so the
+    $p = R$ tangent ray is never requested.
 
     Parameters
     ----------
     geometry : PlasmaGeometry
-        Supplies the chord decompositions and the outer radius R.
+        Supplies the chord decompositions and the outer radius $R$.
     epsilon_zones, kappa_zones : ndarray, shape (n_zones, n_wavelengths)
         Per-zone spectral properties.
     n_impact : int, optional
-        Number of quadrature nodes (default 64). The integrand behaves
-        like sqrt(R - p) near the limb, so convergence is algebraic —
-        raise n_impact rather than assuming spectral accuracy.
+        Number of quadrature nodes (default 64). The integrand
+        behaves like $\sqrt{R - p}$ near the limb, so convergence is
+        algebraic — raise `n_impact` rather than assuming spectral
+        accuracy.
 
     Returns
     -------
     ndarray, shape (n_wavelengths,)
-        Disk-averaged I_nu.
+        Disk-averaged $I_\nu$.
     """
     if int(n_impact) < 2:
         raise ValueError("n_impact must be >= 2")

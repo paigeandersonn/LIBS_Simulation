@@ -1,51 +1,57 @@
-"""
-libssim.physics.partition
-=========================
-Atomic and ionic partition functions U(T) for LTE plasma modeling (Phase 2).
+r"""Atomic and ionic partition functions $U(T)$ for LTE plasma
+modeling (Phase 2).
 
-Physical Context (Herrera 2008)
+Physical context (Herrera 2008)
 -------------------------------
-The internal partition function U(T) is the temperature-dependent
-statistical weight of a species — the normalization that converts a total
-species number density into individual level populations. In the thesis it
-is defined in the symbols list as "U(T): Partition function, dimensionless"
-(p. 23) and enters every population and intensity expression of the
-CF-LIBS / MC-LIBS formalism:
+The internal partition function $U(T)$ is the temperature-dependent
+statistical weight of a species — the normalization that converts a
+total species number density into individual level populations. In the
+thesis it is defined in the symbols list as "U(T): Partition function,
+dimensionless" (p. 23) and enters every population and intensity
+expression of the CF-LIBS / MC-LIBS formalism:
 
-- Boltzmann level population, Eq. 5-1, p. 98:
-      n_k^s = n_tot^s * g_k * exp(-E_k / (k_B * T_exc)) / U^s(T)
-- Saha ionization balance, Eq. 5-2, p. 98 (ratio U^II/U^I) and its
-  MC-LIBS form, Eq. D-1, p. 274 (ratio U_i^j / U_a^j).
-- Integrated line intensity, Eq. 5-8, pp. 103-104 (divides by U^s(T)).
+- Boltzmann level population (Eq. 5-1, p. 98):
+  $n_k^{s} = n_{\mathrm{tot}}^{s}\, g_k
+  \exp(-E_k / k_B T_{\mathrm{exc}}) / U^{s}(T)$
+- Saha ionization balance (Eq. 5-2, p. 98; ratio $U^{II}/U^{I}$) and
+  its MC-LIBS form (Eq. D-1, p. 274; ratio $U_i^{j}/U_a^{j}$).
+- Integrated line intensity (Eq. 5-8, pp. 103-104; divides by
+  $U^{s}(T)$).
 
-Herrera notes (p. 260) that accurate partition functions must "[take] into
-account all the bound quantum states of an atom or ion", i.e. the direct
-Boltzmann sum over bound levels:
+Herrera notes (p. 260) that accurate partition functions must "[take]
+into account all the bound quantum states of an atom or ion", i.e. the
+direct Boltzmann sum over bound levels:
 
-      U(T) = sum_i g_i * exp(-E_i / (k_B * T))                  (definition)
+$$
+U(T) \;=\; \sum_i g_i\, \exp\!\left(-\frac{E_i}{k_B T}\right)
+\qquad \text{(definition)}
+$$
 
 and sources numerical values from published tabulations (p. 133):
 Drawin & Felenbok [130], Halenka [169], Halenka & Madej [170].
 
-Implementation Decisions (documented per development_rules.md)
+Implementation decisions (documented per development_rules.md)
 --------------------------------------------------------------
-The dissertation cites tabulated U(T) sources but does not prescribe an
-evaluation algorithm. This module therefore provides three standard,
+The dissertation cites tabulated $U(T)$ sources but does not prescribe
+an evaluation algorithm. This module therefore provides three standard,
 literature-backed strategies:
 
-1. Direct summation over bound levels (`partition_function_from_levels`) —
-   the definition referenced on p. 260. Exact for the levels supplied;
-   truncation of the level list is the user's responsibility.
-2. Linear interpolation on a tabulated (T, U) grid
-   (`PartitionFunctionTable`) — the primary strategy, mirroring the thesis
-   use of Drawin & Felenbok / Halenka tables. Linear interpolation is
-   monotonicity-preserving and cannot overshoot between grid points.
-3. Polynomial fallback (`PartitionFunctionPolynomial`) in the Irwin (1981,
-   Astrophys. J. Suppl. 45, 621) form ln U = sum_k a_k (ln T)^k, used when
-   the requested temperature falls outside the tabulated grid. This
-   functional form is the de-facto standard for compact partition-function
-   fits and extends beyond the dissertation, which is silent on the
-   functional form of its sources.
+1. Direct summation over bound levels
+   (`partition_function_from_levels`) — the definition referenced on
+   p. 260. Exact for the levels supplied; truncation of the level list
+   is the user's responsibility.
+2. Linear interpolation on a tabulated $(T, U)$ grid
+   (`PartitionFunctionTable`) — the primary strategy, mirroring the
+   thesis use of Drawin & Felenbok / Halenka tables. Linear
+   interpolation is monotonicity-preserving and cannot overshoot
+   between grid points.
+3. Polynomial fallback (`PartitionFunctionPolynomial`) in the Irwin
+   (1981, Astrophys. J. Suppl. 45, 621) form
+   $\ln U = \sum_k a_k (\ln T)^k$, used when the requested temperature
+   falls outside the tabulated grid. This functional form is the
+   de-facto standard for compact partition-function fits and extends
+   beyond the dissertation, which is silent on the functional form of
+   its sources.
 
 `PartitionFunctionProvider` composes strategies 2 and 3 per species
 (element, ion stage I/II/III) and is the single entry point used by the
@@ -62,15 +68,17 @@ Units and Conventions
   Herrera's CF-LIBS detects only I and II lines (p. 103); stage III is
   supported because the Saha chain I <-> II <-> III needs U up to III.
 
-Numerical Assumptions and Limitations
+Numerical assumptions and limitations
 -------------------------------------
-- No ionization-potential lowering correction is applied to U(T) itself;
-  Delta-chi enters the Saha exponent (Eq. 5-2 / D-1), not the level sum.
-- Evaluation outside both the table grid and the polynomial validity range
-  raises ValueError rather than extrapolating: partition functions grow
-  steeply at high T and silent extrapolation is physically unsafe.
-- Low-temperature limit: U(T) -> g_0 (ground-level degeneracy) as T -> 0,
-  a validation identity used in the unit tests.
+- No ionization-potential lowering correction is applied to $U(T)$
+  itself; $\Delta\chi$ enters the Saha exponent (Eq. 5-2 / D-1), not
+  the level sum.
+- Evaluation outside both the table grid and the polynomial validity
+  range raises ValueError rather than extrapolating: partition
+  functions grow steeply at high $T$ and silent extrapolation is
+  physically unsafe.
+- Low-temperature limit: $U(T) \to g_0$ (ground-level degeneracy) as
+  $T \to 0$, a validation identity used in the unit tests.
 
 References
 ----------
@@ -135,42 +143,46 @@ def partition_function_from_levels(
     energies_ev: ArrayLike,
     temperature_K: ArrayLike,
 ) -> float | NDArray[np.float64]:
-    """
-    Direct Boltzmann summation of the partition function over bound levels.
+    r"""
+    Direct Boltzmann summation of the partition function over bound
+    levels.
 
     Implements the definition referenced by Herrera (2008), p. 260 —
-    partition functions that "[take] into account all the bound quantum
-    states of an atom or ion":
+    partition functions that "[take] into account all the bound
+    quantum states of an atom or ion":
 
-        U(T) = sum_i g_i * exp(-E_i / (k_B * T))
+    $$
+    U(T) \;=\; \sum_i g_i\, \exp\!\left(-\frac{E_i}{k_B T}\right)
+    $$
 
-    This is the same statistical sum that normalizes the Boltzmann level
-    populations of Eq. 5-1, p. 98.
+    This is the same statistical sum that normalizes the Boltzmann
+    level populations of Eq. 5-1, p. 98.
 
     Parameters
     ----------
     g_values : array_like of float, shape (n_levels,)
-        Statistical weights g_i = 2J_i + 1 of each bound level
+        Statistical weights $g_i = 2J_i + 1$ of each bound level
         (dimensionless, > 0).
     energies_ev : array_like of float, shape (n_levels,)
-        Level energies E_i above the ground state in eV (>= 0). Converted
-        to Joules internally via `core.constants.EV`.
+        Level energies $E_i$ above the ground state in eV (>= 0).
+        Converted to Joules internally via `core.constants.EV`.
     temperature_K : array_like of float
         Temperature(s) in Kelvin (> 0).
 
     Returns
     -------
     float or ndarray
-        U(T), dimensionless. Scalar input returns a float; array input
-        returns an array of the same shape.
+        $U(T)$, dimensionless. Scalar input returns a float; array
+        input returns an array of the same shape.
 
     Notes
     -----
-    - Exact for the level list supplied; the physical accuracy is limited
-      by truncation of the level list (high-lying states matter at high T).
-    - E_i >> k_B*T terms underflow harmlessly to 0.0 in IEEE-754.
-    - Low-T limit: U -> g_0 of the E = 0 level(s), used as a validation
-      identity.
+    - Exact for the level list supplied; the physical accuracy is
+      limited by truncation of the level list (high-lying states
+      matter at high $T$).
+    - $E_i \gg k_B T$ terms underflow harmlessly to 0.0 in IEEE-754.
+    - Low-$T$ limit: $U \to g_0$ of the $E = 0$ level(s), used as a
+      validation identity.
     """
     g = np.asarray(g_values, dtype=np.float64)
     E_ev = np.asarray(energies_ev, dtype=np.float64)
@@ -311,31 +323,37 @@ class PartitionFunctionTable:
 
 @dataclass(frozen=True, eq=False)
 class PartitionFunctionPolynomial:
-    """
+    r"""
     Polynomial partition function fit in the Irwin (1981) form:
 
-        ln U(T) = sum_{k=0}^{n} a_k * (ln T)^k,   T in Kelvin.
+    $$
+    \ln U(T) \;=\; \sum_{k=0}^{n} a_k\, (\ln T)^{k},
+    \qquad T \text{ in Kelvin.}
+    $$
 
     Fallback strategy for temperatures outside a tabulated grid. The
-    dissertation sources U(T) from tabulations (p. 133) without giving a
-    functional form; the Irwin ln-ln polynomial is the standard compact
-    representation in the astrophysics/plasma literature and is adopted
-    here as a documented extension (see ai_instructions.md).
+    dissertation sources $U(T)$ from tabulations (p. 133) without
+    giving a functional form; the Irwin ln-ln polynomial is the
+    standard compact representation in the astrophysics/plasma
+    literature and is adopted here as a documented extension (see
+    ai_instructions.md).
 
     Parameters
     ----------
     coefficients : tuple of float
-        (a_0, a_1, ..., a_n) in ascending power of ln T.
+        $(a_0, a_1, \ldots, a_n)$ in ascending power of $\ln T$.
     temperature_range_K : tuple of float
-        (T_min, T_max) validity window of the fit in Kelvin. Irwin's
-        original fits are valid for 1000-16000 K; supply the range quoted
-        by whatever source the coefficients come from.
+        $(T_{\min}, T_{\max})$ validity window of the fit in Kelvin.
+        Irwin's original fits are valid for 1000-16000 K; supply the
+        range quoted by whatever source the coefficients come from.
 
     Notes
     -----
-    - Evaluation outside the validity window raises ValueError (partition
-      functions diverge if a polynomial fit is extrapolated).
-    - exp/ln formulation guarantees U > 0 for any real coefficients.
+    - Evaluation outside the validity window raises ValueError
+      (partition functions diverge if a polynomial fit is
+      extrapolated).
+    - exp/ln formulation guarantees $U > 0$ for any real
+      coefficients.
     """
 
     coefficients: Tuple[float, ...]

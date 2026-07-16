@@ -1,27 +1,30 @@
-"""
-libssim.instrument.spectrometer
-===============================
-Instrumental line-spread function and spectral-resolution effects
+r"""Instrumental line-spread function and spectral-resolution effects
 (Phase 4).
 
-Physical Context (Herrera 2008)
+Physical context (Herrera 2008)
 -------------------------------
 A real spectrometer broadens every monochromatic input into the
 instrumental line profile (Ch. 3, pp. 56-60). Its width is set by the
 slits through the geometric spectral bandpass, Eq. 3-19, p. 57:
 
-    dlambda_s = R_d * w_slit
+$$
+\Delta\lambda_s \;=\; R_d\, W_{\mathrm{slit}}
+$$
 
-with R_d the reciprocal linear dispersion (nm mm^-1) and w_slit the
-slit width; validity is bounded below by the diffraction-limited
-bandpass, Eq. 3-20, p. 59 (dlambda_d = R_d * 2*f*lambda / a). The
+with $R_d$ the reciprocal linear dispersion (nm mm$^{-1}$) and
+$W_{\mathrm{slit}}$ the slit width; validity is bounded below by the
+diffraction-limited bandpass, Eq. 3-20, p. 59
+($\Delta\lambda_d = R_d\, w_d$ with $w_d = 2 f \lambda / a$). The
 shape is triangular for equal entrance/exit slits (Fig. 3-5, p. 64),
 but "Doppler and instrumental line profiles usually have a Gaussian
 distribution" (p. 59) — the Gaussian is the thesis' working treatment
 and the default here (also the Phase 4 acceptance criterion). Gaussian
 widths combine in quadrature (Eq. 3-22, p. 60):
 
-    dlambda_G = sqrt(dlambda_D^2 + dlambda_I^2)
+$$
+\Delta\lambda_G \;=\;
+\sqrt{\Delta\lambda_D^{2} + \Delta\lambda_I^{2}}
+$$
 
 which is the validation identity for the convolution implemented here.
 
@@ -34,11 +37,22 @@ Implementation Decisions (documented per development_rules.md)
   the grid ends the response is dimmed. Pad the wavelength grid beyond
   the region of interest — the same discipline as for Lorentzian line
   wings (line_profiles docs).
-- The instrumental FWHM must be resolved by >= 3 grid steps, else the
-  discrete kernel misrepresents the profile and the call raises.
+- The instrumental FWHM must be resolved by $\ge 3$ grid steps, else
+  the discrete kernel misrepresents the profile and the call raises.
 - Aberrations enter as an optional extra Gaussian FWHM combined in
   quadrature (Eq. 3-22) — the thesis measures the combined function
   rather than modeling each aberration (Ch. 4, pp. 84-88).
+- Optional "voigt" shape: measured instrument functions of real
+  (especially echelle) spectrographs show a non-negligible Lorentzian
+  component on top of the Gaussian core (e.g. Hansen, DTU PhD thesis,
+  Figs. 3.3.3-3.3.4: Hg-lamp Voigt fits with
+  $\mathrm{FWHM}_\gamma \approx \tfrac{1}{2}\,\mathrm{FWHM}_\sigma$).
+  The "voigt" LSF keeps Eq. 3-19 (+ aberrations in quadrature) as the
+  *Gaussian* part and adds a user-supplied Lorentzian FWHM
+  (`lorentzian_fwhm_m`, from an instrument-function calibration).
+  Kernel wings extend to $\max(5\sigma,\, 40\,\mathrm{FWHM}_L)$ so
+  the truncated Lorentzian area loss stays below ~1%; unit-sum
+  normalization then makes it flux-conserving on the grid.
 
 Units: SI (m); slit width and dispersion accepted in their
 conventional units (um, nm/mm) and converted internally.
@@ -58,6 +72,10 @@ import numpy as np
 from numpy.typing import NDArray
 
 from ..core.spectrum import Spectrum
+from ..physics.line_profiles import (
+    voigt_fwhm_estimate,
+    voigt_profile_wavelength_m,
+)
 
 _GAUSS_FWHM_PER_SIGMA = 2.0 * np.sqrt(2.0 * np.log(2.0))
 
@@ -68,12 +86,13 @@ def diffraction_limited_bandpass_m(
     wavelength_m: float,
     beam_width_m: float,
 ) -> float:
-    """
+    r"""
     Diffraction-limited spectral bandpass, Eq. 3-20, p. 59
-    (Herrera 2008): dlambda_d = R_d * w_d with w_d = 2*f*lambda/a.
+    (Herrera 2008): $\Delta\lambda_d = R_d\, w_d$ with
+    $w_d = 2 f \lambda / a$.
 
     The slit model of Eq. 3-19 is meaningful only for slit widths above
-    w_d; `InstrumentalProfile` warns against configurations below it.
+    $w_d$; `InstrumentalProfile` warns against configurations below it.
     """
     for name, value in (
         ("reciprocal_dispersion_nm_per_mm", reciprocal_dispersion_nm_per_mm),
@@ -90,13 +109,13 @@ def diffraction_limited_bandpass_m(
 
 @dataclass(frozen=True, eq=False)
 class InstrumentalProfile:
-    """
+    r"""
     Slit-controlled instrumental line-spread function (LSF).
 
     Parameters
     ----------
     reciprocal_dispersion_nm_per_mm : float
-        R_d of Eq. 3-19 (> 0), a property of the spectrograph
+        $R_d$ of Eq. 3-19 (> 0), a property of the spectrograph
         (thesis Ch. 4: 2nd-order polynomial in wavelength, Fig. 4-10;
         supply the value for your working window).
     slit_width_um : float
@@ -104,22 +123,29 @@ class InstrumentalProfile:
     aberration_fwhm_m : float, optional
         Extra Gaussian broadening combined in quadrature (Eq. 3-22),
         default 0.
-    shape : {"gaussian", "triangular"}, optional
-        LSF shape: Gaussian (default; p. 59) or triangular (equal
-        entrance/exit slits, Fig. 3-5, p. 64). The triangular option
-        ignores `aberration_fwhm_m` cross-combination subtleties and
-        applies quadrature to its FWHM as an approximation
-        (documented).
+    shape : {"gaussian", "triangular", "voigt"}, optional
+        LSF shape: Gaussian (default; p. 59), triangular (equal
+        entrance/exit slits, Fig. 3-5, p. 64), or Voigt (Gaussian core
+        of Eq. 3-19 + measured Lorentzian component; module notes).
+        The triangular option ignores `aberration_fwhm_m`
+        cross-combination subtleties and applies quadrature to its
+        FWHM as an approximation (documented).
+    lorentzian_fwhm_m : float, optional
+        Lorentzian FWHM of the "voigt" LSF (m, >= 0; from an
+        instrument-function calibration). Only valid with
+        shape="voigt"; zero degenerates to the Gaussian LSF.
 
     Notes
     -----
-    FWHM (Eq. 3-19): dlambda_I = R_d[nm/mm] * 1e-6 * w_slit[m].
+    FWHM (Eq. 3-19): $\Delta\lambda_I = 10^{-6}\, R_d\, W_{\mathrm{slit}}$
+    with $R_d$ in nm/mm and $W_{\mathrm{slit}}$ in m.
     """
 
     reciprocal_dispersion_nm_per_mm: float
     slit_width_um: float
     aberration_fwhm_m: float = 0.0
     shape: str = "gaussian"
+    lorentzian_fwhm_m: float = 0.0
 
     def __post_init__(self) -> None:
         if not (
@@ -135,13 +161,25 @@ class InstrumentalProfile:
             self.aberration_fwhm_m >= 0 and np.isfinite(self.aberration_fwhm_m)
         ):
             raise ValueError("aberration_fwhm_m must be finite and >= 0")
-        if self.shape not in ("gaussian", "triangular"):
-            raise ValueError("shape must be 'gaussian' or 'triangular'")
+        if self.shape not in ("gaussian", "triangular", "voigt"):
+            raise ValueError(
+                "shape must be 'gaussian', 'triangular' or 'voigt'"
+            )
+        if not (
+            self.lorentzian_fwhm_m >= 0
+            and np.isfinite(self.lorentzian_fwhm_m)
+        ):
+            raise ValueError("lorentzian_fwhm_m must be finite and >= 0")
+        if self.lorentzian_fwhm_m > 0 and self.shape != "voigt":
+            raise ValueError(
+                "lorentzian_fwhm_m > 0 requires shape='voigt'"
+            )
 
     # ------------------------------------------------------------------
     @property
     def slit_bandpass_m(self) -> float:
-        """Geometric spectral bandpass dlambda_s = R_d * w_slit (Eq. 3-19)."""
+        r"""Geometric spectral bandpass
+        $\Delta\lambda_s = R_d\, W_{\mathrm{slit}}$ (Eq. 3-19)."""
         return (
             self.reciprocal_dispersion_nm_per_mm
             * 1.0e-6
@@ -150,19 +188,35 @@ class InstrumentalProfile:
         )
 
     @property
-    def fwhm_m(self) -> float:
-        """Total instrumental FWHM: slit bandpass (+) aberrations in
-        quadrature (Eq. 3-22)."""
+    def gaussian_fwhm_m(self) -> float:
+        """Gaussian part: slit bandpass (+) aberrations in quadrature
+        (Eq. 3-22)."""
         return float(
             np.hypot(self.slit_bandpass_m, self.aberration_fwhm_m)
         )
 
+    @property
+    def fwhm_m(self) -> float:
+        """
+        Total instrumental FWHM. Gaussian/triangular: the quadrature
+        width (Eq. 3-22). Voigt: Whiting-type estimate (inverse
+        Eq. 5-18) of the Gaussian part combined with
+        `lorentzian_fwhm_m`.
+        """
+        if self.shape == "voigt" and self.lorentzian_fwhm_m > 0:
+            return float(
+                voigt_fwhm_estimate(
+                    self.gaussian_fwhm_m, self.lorentzian_fwhm_m
+                )
+            )
+        return self.gaussian_fwhm_m
+
     # ------------------------------------------------------------------
     def kernel(self, grid_step_m: float) -> NDArray[np.float64]:
-        """
+        r"""
         Discrete unit-sum LSF kernel for a uniform grid step.
 
-        Gaussian: sampled to +/- 5 sigma. Triangular: half-base equal
+        Gaussian: sampled to $\pm 5\sigma$. Triangular: half-base equal
         to the FWHM (a triangle's FWHM is half its base, Fig. 3-5).
 
         Raises
@@ -186,6 +240,23 @@ class InstrumentalProfile:
             half_width = int(np.ceil(5.0 * sigma / step))
             offsets = np.arange(-half_width, half_width + 1) * step
             kernel = np.exp(-0.5 * (offsets / sigma) ** 2)
+        elif self.shape == "voigt":
+            sigma = self.gaussian_fwhm_m / _GAUSS_FWHM_PER_SIGMA
+            # Lorentzian wings need a much wider support than 5 sigma:
+            # beyond +/- 40 FWHM_L the truncated area is below ~1%.
+            extent = max(5.0 * sigma, 40.0 * self.lorentzian_fwhm_m)
+            half_width = int(np.ceil(extent / step))
+            # The Voigt is even in detuning: evaluate one half via the
+            # shared normalized profile (at a um-scale anchor so the
+            # detunings survive the round-trip to ~1e-12 relative) and
+            # mirror it, making the kernel symmetric by construction.
+            anchor = 1.0e-6
+            positive = np.arange(0, half_width + 1) * step
+            half_kernel = np.asarray(voigt_profile_wavelength_m(
+                anchor + positive, anchor,
+                self.gaussian_fwhm_m, self.lorentzian_fwhm_m,
+            ))
+            kernel = np.concatenate([half_kernel[:0:-1], half_kernel])
         else:  # triangular
             half_width = int(np.ceil(fwhm / step))
             offsets = np.arange(-half_width, half_width + 1) * step
@@ -210,10 +281,20 @@ class InstrumentalProfile:
                 "(resample first — analysis.resample)"
             )
         kernel = self.kernel(step)
-        convolved = np.convolve(spectrum.intensity, kernel, mode="same")
+        # 'same'-with-respect-to-the-spectrum regardless of which of
+        # the two is longer (numpy's mode="same" returns the LONGER
+        # length, which breaks when a wide-winged Voigt kernel exceeds
+        # the grid span).
+        full = np.convolve(spectrum.intensity, kernel, mode="full")
+        start = (kernel.size - 1) // 2
+        convolved = full[start:start + spectrum.intensity.size]
         metadata = dict(spectrum.metadata)
         metadata["instrumental_fwhm_m"] = self.fwhm_m
         metadata["instrumental_shape"] = self.shape
+        if self.shape == "voigt":
+            metadata["instrumental_lorentzian_fwhm_m"] = (
+                self.lorentzian_fwhm_m
+            )
         metadata["slit_width_um"] = self.slit_width_um
         metadata["reciprocal_dispersion_nm_per_mm"] = (
             self.reciprocal_dispersion_nm_per_mm

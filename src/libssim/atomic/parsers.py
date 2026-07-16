@@ -1,7 +1,4 @@
-"""
-libssim.atomic.parsers
-======================
-Robust parser for NIST-style CSV exports.
+"""Robust parser for NIST-style CSV exports.
 
 Includes defensive cleaning that guarantees the Phase 1 acceptance
 criteria: clean list of Transition objects with no missing critical fields.

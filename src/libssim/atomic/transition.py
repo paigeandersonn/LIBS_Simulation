@@ -1,7 +1,5 @@
-"""
-libssim.atomic.transition
-=========================
-Frozen dataclass representing a single atomic spectral transition (line).
+"""Frozen dataclass representing a single atomic spectral transition
+(line).
 
 Designed to be the core data structure returned by any AtomicDatabase
 implementation. Follows the project's philosophy of immutability and
