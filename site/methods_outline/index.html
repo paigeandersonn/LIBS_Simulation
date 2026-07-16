@@ -1371,37 +1371,53 @@ they affect reproducibility.</p>
 </ul>
 <h3 id="22-atomic-and-spectroscopic-data">2.2 Atomic and spectroscopic data<a class="headerlink" href="#22-atomic-and-spectroscopic-data" title="Permanent link">&para;</a></h3>
 <ul>
-<li>Transition data (wavelength, A_ki, level energies, statistical weights)
-  and first ionization energies transcribed from the NIST Atomic Spectra
-  Database (Kramida et al.); robust CSV parser for ASD exports
+<li>Transition data (wavelength, <span class="arithmatex">\(A_{ki}\)</span>, level energies, statistical
+  weights) and first ionization energies transcribed from the NIST Atomic
+  Spectra Database (Kramida et al.); robust CSV parser for ASD exports
   (<code>atomic/parsers.py</code>) with validation of critical fields.</li>
 <li>Air wavelengths as stored; no air/vacuum correction in the physics layer
   (narrow-line; instrument-layer concern).</li>
-<li>Stark electron-impact half-widths w (at reference density
-  n_e = 10²² m⁻³ = 10¹⁶ cm⁻³) and shift-to-width ratios d/w from tabulated
-  sources (Griem; thesis refs [131,139]).</li>
-<li>Table (paper): lines used per element with λ, A_ki, E_upper, g, w, and
-  ASD accuracy grades.</li>
+<li>Stark electron-impact half-widths <span class="arithmatex">\(w\)</span> (at reference density
+  <span class="arithmatex">\(n_e = 10^{22}\ \mathrm{m^{-3}} = 10^{16}\ \mathrm{cm^{-3}}\)</span>) and
+  shift-to-width ratios <span class="arithmatex">\(d/w\)</span> from tabulated sources (Griem; thesis
+  refs [131,139]).</li>
+<li>Table (paper): lines used per element with <span class="arithmatex">\(\lambda\)</span>, <span class="arithmatex">\(A_{ki}\)</span>,
+  <span class="arithmatex">\(E_{\mathrm{upper}}\)</span>, <span class="arithmatex">\(g\)</span>, <span class="arithmatex">\(w\)</span>, and ASD accuracy grades.</li>
 </ul>
 <h3 id="23-plasma-state-and-equilibrium-populations-lte">2.3 Plasma state and equilibrium populations (LTE)<a class="headerlink" href="#23-plasma-state-and-equilibrium-populations-lte" title="Permanent link">&para;</a></h3>
 <ul>
-<li>LTE assumption: single temperature T = T_exc = T_ion (justify with
-  gate-delay regime studied).</li>
-<li><strong>Boltzmann level populations</strong> (H 5-1, p. 98):
-  n_k = n_tot g_k exp(−E_k/k_B T)/U(T)  → <code>physics/boltzmann.py</code>.</li>
-<li><strong>Saha ionization balance</strong>, two stages, per element (H 5-2 p. 98 /
-  D-1 p. 274): Saha function s_j(T); closure by mass conservation
+<li>LTE assumption: single temperature
+  <span class="arithmatex">\(T = T_{\mathrm{exc}} = T_{\mathrm{ion}}\)</span> (justify with gate-delay
+  regime studied).</li>
+<li>
+<p><strong>Boltzmann level populations</strong> (H 5-1, p. 98) → <code>physics/boltzmann.py</code>:</p>
+<div class="arithmatex">\[
+n_k \;=\; n_{\mathrm{tot}}\,
+\frac{g_k\, e^{-E_k/(k_B T)}}{U(T)}
+\]</div>
+</li>
+<li>
+<p><strong>Saha ionization balance</strong>, two stages, per element (H 5-2 p. 98 /
+  D-1 p. 274): Saha function <span class="arithmatex">\(s^{j}(T)\)</span>; closure by mass conservation
   (D-2) and charge equilibrium (D-3); explicit stage densities
-  (D-8, D-10) → <code>physics/saha.py</code>.</li>
-<li>Self-consistent electron density: implicit equation (D-9)
-  n_e = Σ_j n_j s_j/(s_j+n_e) solved by bracketed root finding
-  (Brent's method, rtol 10⁻¹⁴; unique positive root proven by
-  monotonicity). Mass conservation exact in floating point by
-  construction (n_a = n_j − n_i).</li>
-<li><strong>[deviation]</strong> Ionization-potential lowering Δχ: dissertation defines
-  the quantity but gives no formula; implemented as the standard Debye
-  estimate Δχ_z = z e²/(4πε₀λ_D) (Griem 1964; Drawin &amp; Felenbok 1965),
-  default 0 (magnitude 0.05–0.2 eV under LIBS conditions).</li>
+  (D-8, D-10) → <code>physics/saha.py</code>.</p>
+</li>
+<li>
+<p>Self-consistent electron density: implicit equation (D-9)</p>
+<div class="arithmatex">\[
+n_e \;=\; \sum_j \frac{n^{j}\, s^{j}(T)}{s^{j}(T) + n_e}
+\]</div>
+<p>solved by bracketed root finding (Brent's method, rtol <span class="arithmatex">\(10^{-14}\)</span>;
+unique positive root proven by monotonicity). Mass conservation exact
+in floating point by construction (<span class="arithmatex">\(n_a^{j} = n^{j} - n_i^{j}\)</span>).</p>
+</li>
+<li>
+<p><strong>[deviation]</strong> Ionization-potential lowering <span class="arithmatex">\(\Delta\chi\)</span>: dissertation
+  defines the quantity but gives no formula; implemented as the standard
+  Debye estimate <span class="arithmatex">\(\Delta\chi_z = z e^{2}/(4\pi\varepsilon_0 \lambda_D)\)</span>
+  (Griem 1964; Drawin &amp; Felenbok 1965), default 0 (magnitude
+  0.05–0.2 eV under LIBS conditions).</p>
+</li>
 <li><strong>LTE validity diagnostics</strong> reported with every simulation:
   McWhirter criterion (H 5-3, p. 99) and Debye-sphere particle count
   (H 5-16, p. 106), both re-derived in SI and validated against the
@@ -1409,56 +1425,73 @@ they affect reproducibility.</p>
 </ul>
 <h3 id="24-partition-functions">2.4 Partition functions<a class="headerlink" href="#24-partition-functions" title="Permanent link">&para;</a></h3>
 <ul>
-<li>Definition: direct Boltzmann sum over bound levels U(T) = Σ g_i
-  exp(−E_i/k_B T) (H p. 260) → <code>physics/partition.py</code>.</li>
+<li>Definition: direct Boltzmann sum over bound levels,
+  <span class="arithmatex">\(U(T) = \sum_i g_i\, e^{-E_i/(k_B T)}\)</span> (H p. 260)
+  → <code>physics/partition.py</code>.</li>
 <li>Three composable evaluation strategies (state which was used per element):</li>
 <li>direct summation over transcribed NIST level lists (primary; Na I
-     complete through n = 6, Al I through 6s);</li>
-<li>linear interpolation on tabulated (T, U) grids (Drawin &amp; Felenbok /
+     complete through <span class="arithmatex">\(n = 6\)</span>, Al I through 6s);</li>
+<li>linear interpolation on tabulated <span class="arithmatex">\((T, U)\)</span> grids (Drawin &amp; Felenbok /
      Halenka style);</li>
-<li>Irwin (1981) polynomial ln U = Σ a_k (ln T)^k as an out-of-grid
-     fallback.</li>
+<li>Irwin (1981) polynomial <span class="arithmatex">\(\ln U = \sum_k a_k (\ln T)^{k}\)</span> as an
+     out-of-grid fallback.</li>
 <li>No extrapolation outside validity ranges (raises instead — safety
   decision worth one sentence).</li>
-<li>High-n Rydberg truncation caveat (Inglis–Teller microfield dissolution);
-  optional hydrogenic tail augmentation (2n² weights at χ − R_y/n²),
-  deliberately not applied by default; quantify truncation error
-  (few % at 15 kK for Na/Al lists).</li>
+<li>High-<span class="arithmatex">\(n\)</span> Rydberg truncation caveat (Inglis–Teller microfield
+  dissolution); optional hydrogenic tail augmentation (<span class="arithmatex">\(2n^{2}\)</span> weights at
+  <span class="arithmatex">\(\chi - R_y/n^{2}\)</span>), deliberately not applied by default; quantify
+  truncation error (few % at 15 kK for Na/Al lists).</li>
 </ul>
 <h3 id="25-line-emission-and-absorption-coefficients">2.5 Line emission and absorption coefficients<a class="headerlink" href="#25-line-emission-and-absorption-coefficients" title="Permanent link">&para;</a></h3>
 <ul>
-<li>Spontaneous photon rate I_ki = n_k A_ki (H 5-8, pp. 103–104); spectral
-  emission coefficient ε_ν = (hν₀/4π) n_k A_ki P(ν) → <code>physics/emission.py</code>.</li>
-<li><strong>[deviation]</strong> Einstein B_lu from A_ul via the standard detailed-balance
-  relations (Mihalas 1978) — not printed in the dissertation, which takes
-  B as data.</li>
-<li>Bound-bound absorption coefficient with LTE stimulated-emission factor
-  (H 5-52, p. 120): κ_bb = (hν₀/c) B_lu n_l P(ν)(1 − e^(−hν₀/k_BT)).</li>
-<li>Narrow-line approximation (hν and stimulated factor evaluated at ν₀;
-  relative error &lt; 10⁻⁴).</li>
-<li>Internal consistency: Kirchhoff identity ε_ν/κ_bb = B_ν(T) enforced
-  numerically in the test suite (state this — it pins the A↔B convention).</li>
-<li>Planck functions B_ν, B_λ (H 3-11, p. 55), expm1-stable at both limits.</li>
+<li>Spontaneous photon rate <span class="arithmatex">\(I_{ki} = n_k A_{ki}\)</span> (H 5-8, pp. 103–104);
+  spectral emission coefficient
+  <span class="arithmatex">\(\epsilon_\nu = (h\nu_0/4\pi)\, n_k A_{ki} P(\nu)\)</span>
+  → <code>physics/emission.py</code>.</li>
+<li><strong>[deviation]</strong> Einstein <span class="arithmatex">\(B_{lu}\)</span> from <span class="arithmatex">\(A_{ul}\)</span> via the standard
+  detailed-balance relations (Mihalas 1978) — not printed in the
+  dissertation, which takes <span class="arithmatex">\(B\)</span> as data.</li>
+<li>
+<p>Bound-bound absorption coefficient with LTE stimulated-emission factor
+  (H 5-52, p. 120):</p>
+<div class="arithmatex">\[
+\kappa_{bb} \;=\; \frac{h\nu_0}{c}\, B_{lu}\, n_l\, P(\nu)
+\left(1 - e^{-h\nu_0/(k_B T)}\right)
+\]</div>
+</li>
+<li>
+<p>Narrow-line approximation (<span class="arithmatex">\(h\nu\)</span> and stimulated factor evaluated at
+  <span class="arithmatex">\(\nu_0\)</span>; relative error <span class="arithmatex">\(&lt; 10^{-4}\)</span>).</p>
+</li>
+<li>Internal consistency: Kirchhoff identity
+  <span class="arithmatex">\(\epsilon_\nu/\kappa_{bb} = B_\nu(T)\)</span> enforced numerically in the test
+  suite (state this — it pins the <span class="arithmatex">\(A \leftrightarrow B\)</span> convention).</li>
+<li>Planck functions <span class="arithmatex">\(B_\nu\)</span>, <span class="arithmatex">\(B_\lambda\)</span> (H 3-11, p. 55), expm1-stable at
+  both limits.</li>
 </ul>
 <h3 id="26-line-profiles-and-broadening">2.6 Line profiles and broadening<a class="headerlink" href="#26-line-profiles-and-broadening" title="Permanent link">&para;</a></h3>
 <ul>
-<li>Voigt profile: Doppler (Gaussian) ⊗ Stark (Lorentzian)
+<li>Voigt profile: Doppler (Gaussian) <span class="arithmatex">\(\otimes\)</span> Stark (Lorentzian)
   → <code>physics/line_profiles.py</code>, evaluated with the Faddeeva function
   (scipy <code>voigt_profile</code>; dissertation used a Humlíček/Schreier algorithm —
   same function).</li>
-<li>Doppler FWHM (H 3-1, p. 50): Δλ_D = λ₀ √(8 ln2 k_B T/(m c²)).</li>
-<li>Quadratic Stark FWHM (H 3-8, p. 53, SI form): linear in n_e, tabulated
-  w at 10²² m⁻³, optional ion-broadening bracket with Debye correction;
-  α = 0 default (negligible under LIBS conditions, H p. 106).</li>
+<li>Doppler FWHM (H 3-1, p. 50):
+  <span class="arithmatex">\(\Delta\lambda_D = \lambda_0 \sqrt{8 \ln 2\, k_B T/(m c^{2})}\)</span>.</li>
+<li>Quadratic Stark FWHM (H 3-8, p. 53, SI form): linear in <span class="arithmatex">\(n_e\)</span>, tabulated
+  <span class="arithmatex">\(w\)</span> at <span class="arithmatex">\(10^{22}\ \mathrm{m^{-3}}\)</span>, optional ion-broadening bracket with
+  Debye correction; <span class="arithmatex">\(\alpha = 0\)</span> default (negligible under LIBS
+  conditions, H p. 106).</li>
 <li>Quadratic Stark shift (H 3-9, p. 53); red-shift sign convention;
-  <strong>[deviation]</strong> ambiguous ± joining the ion term to d/w resolved to the
-  Griem convention.</li>
+  <strong>[deviation]</strong> ambiguous <span class="arithmatex">\(\pm\)</span> joining the ion term to <span class="arithmatex">\(d/w\)</span> resolved
+  to the Griem convention.</li>
 <li><strong>[deviation]</strong> Printed reduced-Voigt pair (H 5-54/5-55) is mutually
-  inconsistent by √ln2; profiles are evaluated with exact FWHM semantics
-  (equivalent to 5-53 with the √ln2 restored); equivalence to the verbatim
-  reduced form proven to machine precision in tests.</li>
-<li>All profiles analytically unit-normalized (∫P dν = 1; tested ≤ 10⁻¹⁰);
-  Lorentzian tail-mass note for finite grids.</li>
+  inconsistent by <span class="arithmatex">\(\sqrt{\ln 2}\)</span>; profiles are evaluated with exact FWHM
+  semantics (equivalent to 5-53 with the <span class="arithmatex">\(\sqrt{\ln 2}\)</span> restored);
+  equivalence to the verbatim reduced form proven to machine precision in
+  tests.</li>
+<li>All profiles analytically unit-normalized
+  (<span class="arithmatex">\(\int P\,\mathrm{d}\nu = 1\)</span>; tested <span class="arithmatex">\(\le 10^{-10}\)</span>); Lorentzian
+  tail-mass note for finite grids.</li>
 <li>Whiting-type FWHM algebra (H 5-18, p. 107) for Stark-width extraction
   (used in the validation workflow, §2.12).</li>
 <li>Explicitly out of scope: van der Waals, resonance, natural broadening
@@ -1469,67 +1502,94 @@ they affect reproducibility.</p>
 <li>Kramers–Unsöld hydrogen-like model → <code>physics/continuum.py</code>:
   free-free (inverse bremsstrahlung, H 5-50, p. 119) and free-bound
   (radiative recombination, H 5-51, p. 120) absorption coefficients;
-  Gaunt factor G and Biberman factor ξ ≈ 1 defaults.</li>
+  Gaunt factor <span class="arithmatex">\(G\)</span> and Biberman factor <span class="arithmatex">\(\xi \approx 1\)</span> defaults.</li>
 <li><strong>[deviation]</strong> Typographical error in printed Eq. 5-50 exponential
-  factor corrected to (1 − e^(−hν/k_BT)); justified three ways (Rybicki &amp;
-  Lightman coefficient match, Kirchhoff image of Eq. 5-7, physical
-  boundedness).</li>
-<li>Continuum emission via Kirchhoff's law ε_ν = κ_ν B_ν(T); Planck-mean
-  absorption coefficient (H 5-46, p. 118) available for the energy-loss
-  term.</li>
-<li>SI conversion of the Gaussian-CGS forms (e⁶ → e⁶/(4πε₀)³), validated
-  against the printed 3.7×10⁸ CGS coefficient.</li>
+  factor corrected to <span class="arithmatex">\(\left(1 - e^{-h\nu/(k_B T)}\right)\)</span>; justified
+  three ways (Rybicki &amp; Lightman coefficient match, Kirchhoff image of
+  Eq. 5-7, physical boundedness).</li>
+<li>Continuum emission via Kirchhoff's law
+  <span class="arithmatex">\(\epsilon_\nu = \kappa_\nu B_\nu(T)\)</span>; Planck-mean absorption
+  coefficient (H 5-46, p. 118) available for the energy-loss term.</li>
+<li>SI conversion of the Gaussian-CGS forms
+  (<span class="arithmatex">\(e^{6} \to e^{6}/(4\pi\varepsilon_0)^{3}\)</span>), validated against the
+  printed <span class="arithmatex">\(3.7\times10^{8}\)</span> CGS coefficient.</li>
 </ul>
 <h3 id="28-plasma-geometry-and-radiative-transfer">2.8 Plasma geometry and radiative transfer<a class="headerlink" href="#28-plasma-geometry-and-radiative-transfer" title="Permanent link">&para;</a></h3>
 <ul>
-<li>Spherical "onion" discretization: N concentric homogeneous shells, each
-  a locally uniform plasma state → <code>transport/geometry.py</code>; parabolic
-  initial T(r) and n(r) profiles (H 5-36/5-37, p. 116) with per-zone Saha
-  closure; single-zone case = uniform sphere.</li>
-<li>Per-zone spectral properties: ε_ν(λ), κ'_ν(λ) with
-  κ' = κ_ff + κ_fb + κ_bb (H 5-49, p. 119) → <code>transport/emissivity.py</code>.</li>
-<li>Formal solution of the RTE (H 5-44, p. 117) along chords at impact
-  parameter p (H 5-48, p. 119) evaluated <strong>analytically per segment</strong>:
-  I_out = I_in e^(−κL) + S(1 − e^(−κL)), S = ε/κ = B_ν (Kirchhoff)
-  → <code>transport/radiative.py</code>. No ODE stepping; expm1 keeps the optically
-  thin limit exact and the thick limit saturates at the blackbody ceiling
-  (H 3-10, p. 55).</li>
-<li>Observables: spatially resolved radiance at one impact parameter, or
+<li>Spherical "onion" discretization: <span class="arithmatex">\(N\)</span> concentric homogeneous shells,
+  each a locally uniform plasma state → <code>transport/geometry.py</code>; parabolic
+  initial <span class="arithmatex">\(T(r)\)</span> and <span class="arithmatex">\(n(r)\)</span> profiles (H 5-36/5-37, p. 116) with per-zone
+  Saha closure; single-zone case = uniform sphere.</li>
+<li>Per-zone spectral properties: <span class="arithmatex">\(\epsilon_\nu(\lambda)\)</span>,
+  <span class="arithmatex">\(\kappa'_\nu(\lambda)\)</span> with
+  <span class="arithmatex">\(\kappa' = \kappa_{ff} + \kappa_{fb} + \kappa_{bb}\)</span> (H 5-49, p. 119)
+  → <code>transport/emissivity.py</code>.</li>
+<li>
+<p>Formal solution of the RTE (H 5-44, p. 117) along chords at impact
+  parameter <span class="arithmatex">\(p\)</span> (H 5-48, p. 119) evaluated <strong>analytically per segment</strong>
+  → <code>transport/radiative.py</code>:</p>
+<div class="arithmatex">\[
+I_{\mathrm{out}} \;=\; I_{\mathrm{in}}\, e^{-\kappa L}
++ S \left(1 - e^{-\kappa L}\right),
+\qquad
+S \;=\; \epsilon/\kappa \;=\; B_\nu \ \text{(Kirchhoff)}.
+\]</div>
+<p>No ODE stepping; expm1 keeps the optically thin limit exact and the
+thick limit saturates at the blackbody ceiling (H 3-10, p. 55).</p>
+</li>
+<li>
+<p>Observables: spatially resolved radiance at one impact parameter, or
   disk-integrated radiance (area-weighted average over the projected
-  disk) — the standard spatially integrated LIBS measurement.</li>
+  disk) — the standard spatially integrated LIBS measurement.</p>
+</li>
 <li>Emergent behavior to state: self-absorption and self-reversal arise
   naturally from cool outer zones (no ad hoc self-absorption parameter).</li>
-<li>Optical depth τ_ν = Σ κ'L reported per line of sight.</li>
+<li>Optical depth <span class="arithmatex">\(\tau_\nu = \sum \kappa' L\)</span> reported per line of sight.</li>
 </ul>
 <h3 id="29-temporal-evolution-and-gate-integration">2.9 Temporal evolution and gate integration<a class="headerlink" href="#29-temporal-evolution-and-gate-integration" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Quasi-static assumption: plasma rendered as a static snapshot at each
   quadrature instant → <code>temporal/</code>.</li>
-<li>Parameter histories: power-law decays T(t) = T_ref (t/t_ref)^(−b),
-  n_e(t) = n_ref (t/t_ref)^(−a) (Aguilera &amp; Aragón 2004; Cristoforetti
-  et al. 2004) or exponential; <strong>[deviation]</strong> documented simplification —
-  the dissertation's ODE energy balance (H 5-35 / App. C) and self-similar
-  expansion (App. B) are not solved; any user profile can be substituted.</li>
-<li>Evolution models: uniform sphere with per-instant Saha closure of n_e
+<li>Parameter histories: power-law decays
+  <span class="arithmatex">\(T(t) = T_{\mathrm{ref}}\, (t/t_{\mathrm{ref}})^{-b}\)</span>,
+  <span class="arithmatex">\(n_e(t) = n_{\mathrm{ref}}\, (t/t_{\mathrm{ref}})^{-a}\)</span>
+  (Aguilera &amp; Aragón 2004; Cristoforetti et al. 2004) or exponential;
+  <strong>[deviation]</strong> documented simplification — the dissertation's ODE
+  energy balance (H 5-35 / App. C) and self-similar expansion (App. B)
+  are not solved; any user profile can be substituted.</li>
+<li>Evolution models: uniform sphere with per-instant Saha closure of <span class="arithmatex">\(n_e\)</span>
   (primary, used for validation); self-similar expanding onion
   (App. B Eq. B-9 densities, frozen profile shape) as the
   spatially resolved option.</li>
-<li>Detector gate: E_λ = ∫_{t_d}^{t_d+t_g} I_λ(t) dt (top-hat gate;
-  t_delay/t_gate definitions H pp. 46–47), Gauss–Legendre quadrature
-  (default; node count stated), trapezoid alternative.</li>
+<li>
+<p>Detector gate (top-hat;
+  <span class="arithmatex">\(t_{\mathrm{delay}}\)</span>/<span class="arithmatex">\(t_{\mathrm{gate}}\)</span> definitions H pp. 46–47):</p>
+<div class="arithmatex">\[
+E_\lambda \;=\; \int_{t_d}^{t_d + t_g} I_\lambda(t)\, \mathrm{d}t
+\]</div>
+<p>Gauss–Legendre quadrature (default; node count stated), trapezoid
+alternative.</p>
+</li>
 </ul>
 <h3 id="210-instrument-model">2.10 Instrument model<a class="headerlink" href="#210-instrument-model" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Chain (each stage optional, order fixed) → <code>instrument/response.py</code>:
   LSF convolution → spectral collection efficiency → pixel binning →
   detector noise.</li>
-<li>Line-spread function: Gaussian working model (H p. 59); FWHM from slit
-  bandpass Δλ_s = R_d w_slit (H 3-19, p. 57), diffraction-limited floor
-  (H 3-20, p. 59); Gaussian widths combine in quadrature (H 3-22, p. 60);
-  discrete flux-conserving kernel on a uniform grid, ≥ 3 samples per FWHM
-  enforced.</li>
-<li>Collection efficiency F_det(λ) = F_rel(λ)·F_abs (H 5-9..5-11, p. 104);
-  F_rel from tabulated calibration curves, F_abs a single radiometric
+<li>Line-spread function: Gaussian working model (H p. 59), with triangular
+  (equal entrance/exit slits, H Fig. 3-5, p. 64) and Voigt (Gaussian core
+  plus calibrated Lorentzian component, as measured for echelle-type
+  instrument functions; used in the Hansen validation case, §2.12)
+  options; FWHM from slit bandpass
+  <span class="arithmatex">\(\Delta\lambda_s = R_d\, W_{\mathrm{slit}}\)</span> (H 3-19, p. 57),
+  diffraction-limited floor (H 3-20, p. 59); Gaussian widths combine in
+  quadrature, <span class="arithmatex">\(\Delta\lambda_G = \sqrt{\Delta\lambda_D^{2} +
+  \Delta\lambda_I^{2}}\)</span> (H 3-22, p. 60); discrete flux-conserving kernel
+  on a uniform grid, <span class="arithmatex">\(\ge 3\)</span> samples per FWHM enforced.</li>
+<li>Collection efficiency
+  <span class="arithmatex">\(F_{\mathrm{det}}(\lambda) = F_{\mathrm{rel}}(\lambda)\,
+  F_{\mathrm{abs}}\)</span> (H 5-9..5-11, p. 104); <span class="arithmatex">\(F_{\mathrm{rel}}\)</span> from
+  tabulated calibration curves, <span class="arithmatex">\(F_{\mathrm{abs}}\)</span> a single radiometric
   scale factor.</li>
 <li>Detector noise (Janesick-standard, documented extension): Poisson shot
   noise on signal + dark + background, additive Gaussian read noise;
@@ -1539,19 +1599,20 @@ they affect reproducibility.</p>
 <ul>
 <li>Python 3 / NumPy / SciPy; strict SI internally; frozen dataclasses;
   vectorized pure functions; no global state.</li>
-<li>Numerical-stability choices: expm1 for all (1−e^(−x)) factors, Brent
-  bracketing for the Saha root, refusal to extrapolate partition tables,
-  Voigt via Faddeeva.</li>
+<li>Numerical-stability choices: expm1 for all <span class="arithmatex">\((1 - e^{-x})\)</span> factors,
+  Brent bracketing for the Saha root, refusal to extrapolate partition
+  tables, Voigt via Faddeeva.</li>
 <li>Verification strategy (worth a short subsection or table):</li>
-<li>analytic identities as unit tests: profile normalization ≤ 10⁻¹⁰,
-    Kirchhoff closure ε/κ = B_ν, B_λ = B_ν c/λ², Saha mass conservation
-    exact, population fractions sum to 1, SI forms reproduce the printed
-    CGS coefficients (McWhirter, Debye sphere, Stark bracket, Kramers
-    3.7×10⁸), Whiting FWHM accuracy 1–2 %, gate integral ∝ t_gate for a
-    constant plasma, one-zone transfer reproduces
-    I = B(1 − e^(−κl)) exactly;</li>
-<li>limit behavior: T→0 neutral limit, U(T)→g₀, optically thin/thick
-    limits, Wien/Rayleigh–Jeans limits.</li>
+<li>analytic identities as unit tests: profile normalization
+    <span class="arithmatex">\(\le 10^{-10}\)</span>, Kirchhoff closure <span class="arithmatex">\(\epsilon/\kappa = B_\nu\)</span>,
+    <span class="arithmatex">\(B_\lambda = B_\nu\, c/\lambda^{2}\)</span>, Saha mass conservation exact,
+    population fractions sum to 1, SI forms reproduce the printed CGS
+    coefficients (McWhirter, Debye sphere, Stark bracket, Kramers
+    <span class="arithmatex">\(3.7\times10^{8}\)</span>), Whiting FWHM accuracy 1–2 %, gate integral
+    <span class="arithmatex">\(\propto t_{\mathrm{gate}}\)</span> for a constant plasma, one-zone transfer
+    reproduces <span class="arithmatex">\(I = B\left(1 - e^{-\kappa \ell}\right)\)</span> exactly;</li>
+<li>limit behavior: <span class="arithmatex">\(T \to 0\)</span> neutral limit, <span class="arithmatex">\(U(T) \to g_0\)</span>, optically
+    thin/thick limits, Wien/Rayleigh–Jeans limits.</li>
 <li>Code availability statement (repository, version/tag, license).</li>
 </ul>
 <h3 id="212-validation-methodology">2.12 Validation methodology<a class="headerlink" href="#212-validation-methodology" title="Permanent link">&para;</a></h3>
@@ -1566,15 +1627,15 @@ they affect reproducibility.</p>
   normalization; resampling onto the common model grid; all steps recorded
   in spectrum metadata (provenance).</li>
 <li>Comparison metrics → <code>validation/metrics.py</code>:</li>
-<li>primary: linear correlation coefficient R (H 5-56, p. 122 — the
+<li>primary: linear correlation coefficient <span class="arithmatex">\(R\)</span> (H 5-56, p. 122 — the
     MC-LIBS cost function);</li>
 <li>supporting: peak-position matching (wavelength calibration + line
-    identification), peak intensity ratios (population/A-value physics),
+    identification), peak intensity ratios (population/<span class="arithmatex">\(A\)</span>-value physics),
     normalized rms residual (overall shape).</li>
 <li>Validation cases (results section will expand; methods states the
-  design): literature-sourced plasma conditions (T, n_e from Stark
+  design): literature-sourced plasma conditions (<span class="arithmatex">\(T\)</span>, <span class="arithmatex">\(n_e\)</span> from Stark
   measurements) drive the uniform-plasma forward model; e.g. Na I D
-  doublet vs. Hansen thesis spectrum at 500 ns delay (R = 0.9894).</li>
+  doublet vs. Hansen thesis spectrum at 500 ns delay (<span class="arithmatex">\(R = 0.9894\)</span>).</li>
 <li>Atomic-data provenance discipline: NIST ASD transcription with flagged
   low-confidence entries; representative Stark widths flagged for
   replacement with tabulated coefficients in quantitative width work.</li>
