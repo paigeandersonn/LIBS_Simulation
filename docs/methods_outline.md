@@ -507,12 +507,3 @@ literature-sourced plasma conditions ($T$, $n_e$ from Stark
 measurements). First real-data case: the Na I D doublet against the
 Hansen thesis spectrum at 500 ns delay, $R = 0.9894$.
 
-## Suggested tables/figures for the journal manuscript
-
-- Fig. M1: pipeline block diagram (Overview).
-- Fig. M2: onion geometry + chord/impact-parameter sketch (Transfer).
-- Table M1: symbols and units.
-- Table M2: atomic data per line with sources/grades (Atomic data).
-- Table M3: verification identities and tolerances (Verification).
-- Table M4: validation cases with plasma conditions and sources
-  (Validation).
