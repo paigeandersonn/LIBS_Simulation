@@ -113,6 +113,77 @@ class TestConvolution:
             InstrumentalProfile(R_D, SLIT_UM).convolve(spectrum)
 
 
+class TestVoigtLSF:
+    """Voigt LSF (Gaussian core of Eq. 3-19 + measured Lorentzian
+    component; module notes)."""
+
+    L_FWHM = 8.0e-11  # m
+
+    def voigt_profile(self):
+        return InstrumentalProfile(
+            R_D, SLIT_UM, shape="voigt", lorentzian_fwhm_m=self.L_FWHM
+        )
+
+    def test_total_fwhm_is_whiting_estimate(self):
+        from libssim.physics.line_profiles import voigt_fwhm_estimate
+
+        profile = self.voigt_profile()
+        assert profile.fwhm_m == pytest.approx(
+            float(voigt_fwhm_estimate(1.6e-10, self.L_FWHM)), rel=1e-12
+        )
+        assert profile.fwhm_m > profile.gaussian_fwhm_m
+
+    def test_kernel_unit_sum_symmetric_wide_wings(self):
+        step = 1.0e-12
+        kernel = self.voigt_profile().kernel(step)
+        assert kernel.sum() == pytest.approx(1.0, abs=1e-14)
+        assert kernel.size % 2 == 1
+        assert np.allclose(kernel, kernel[::-1], rtol=0, atol=1e-15)
+        # support reaches 40x the Lorentzian FWHM
+        assert (kernel.size - 1) / 2 * step >= 40.0 * self.L_FWHM
+
+    def test_convolved_fwhm_matches_voigt_estimate(self):
+        from libssim.physics.line_profiles import voigt_fwhm_estimate
+
+        # Gaussian test line (x) Voigt LSF -> Voigt with the line width
+        # folded into the Gaussian part (widths: quadrature for G, sum
+        # for L) — Whiting-type estimate accurate to ~2%.
+        fwhm_line = 5.0e-11
+        profile = self.voigt_profile()
+        convolved = profile.convolve(gaussian_line(fwhm_line))
+        gauss_total = np.hypot(fwhm_line, profile.gaussian_fwhm_m)
+        expected = float(voigt_fwhm_estimate(gauss_total, self.L_FWHM))
+        assert measured_fwhm(convolved) == pytest.approx(expected, rel=2e-2)
+
+    def test_flux_conserved(self):
+        # margins must exceed the kernel support (40 x FWHM_L = 3.2 nm
+        # half-extent) or 'same'-mode cropping sheds real wing flux
+        fwhm_line = 5.0e-11
+        sigma = fwhm_line / (2 * np.sqrt(2 * np.log(2)))
+        grid = LAMBDA0 + np.arange(-4000, 4001) * 1.0e-12
+        line = Spectrum(
+            wavelength_m=grid,
+            intensity=np.exp(-0.5 * ((grid - LAMBDA0) / sigma) ** 2),
+        )
+        convolved = self.voigt_profile().convolve(line)
+        assert convolved.intensity.sum() == pytest.approx(
+            line.intensity.sum(), rel=1e-9
+        )
+
+    def test_lorentzian_requires_voigt_shape(self):
+        with pytest.raises(ValueError, match="requires shape='voigt'"):
+            InstrumentalProfile(R_D, SLIT_UM, lorentzian_fwhm_m=self.L_FWHM)
+
+    def test_zero_lorentzian_degenerates_to_gaussian(self):
+        voigt = InstrumentalProfile(R_D, SLIT_UM, shape="voigt")
+        gauss = InstrumentalProfile(R_D, SLIT_UM)
+        assert voigt.fwhm_m == gauss.fwhm_m
+        # voigt path goes through wofz; agreement bounded by its
+        # accuracy, not machine epsilon
+        assert np.allclose(voigt.kernel(1e-12), gauss.kernel(1e-12),
+                           rtol=1e-6, atol=1e-12)
+
+
 class TestPixelSampling:
     def test_bin_average_preserves_mean(self):
         line = gaussian_line(5.0e-11)
