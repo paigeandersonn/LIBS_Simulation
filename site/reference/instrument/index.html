@@ -1,0 +1,3774 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Forward modeling of laser-induced breakdown spectroscopy (LIBS) plasma emission — LTE physics, radiative transport, temporal gating, and instrument response.">
+      
+      
+      
+      
+        <link rel="prev" href="../temporal/">
+      
+      
+        <link rel="next" href="../analysis/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Instrument - libssim</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#instrument" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="libssim" class="md-header__button md-logo" aria-label="libssim" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            libssim
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Instrument
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  API Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../project_goal/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Project Docs
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="libssim" class="md-nav__button md-logo" aria-label="libssim" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    libssim
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../core/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../atomic/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Atomic Data
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../physics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Physics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../transport/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Transport
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../temporal/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Temporal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Instrument
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Instrument
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#libssim.instrument.spectrometer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-module"></code>&nbsp;spectrometer
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" spectrometer">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#libssim.instrument.spectrometer.InstrumentalProfile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;InstrumentalProfile
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" InstrumentalProfile">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#libssim.instrument.spectrometer.InstrumentalProfile.slit_bandpass_m" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code>&nbsp;slit_bandpass_m
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#libssim.instrument.spectrometer.InstrumentalProfile.gaussian_fwhm_m" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code>&nbsp;gaussian_fwhm_m
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#libssim.instrument.spectrometer.InstrumentalProfile.fwhm_m" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code>&nbsp;fwhm_m
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#libssim.instrument.spectrometer.InstrumentalProfile.kernel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;kernel
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#libssim.instrument.spectrometer.InstrumentalProfile.convolve" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;convolve
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#libssim.instrument.spectrometer.InstrumentalProfile.sample_to_pixels" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;sample_to_pixels
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#libssim.instrument.spectrometer.diffraction_limited_bandpass_m" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;diffraction_limited_bandpass_m
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#libssim.instrument.optics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-module"></code>&nbsp;optics
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" optics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#libssim.instrument.optics.CollectionOptics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;CollectionOptics
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" CollectionOptics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#libssim.instrument.optics.CollectionOptics.efficiency" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;efficiency
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#libssim.instrument.optics.CollectionOptics.apply" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;apply
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#libssim.instrument.optics.tabulated_efficiency" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;tabulated_efficiency
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#libssim.instrument.noise" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-module"></code>&nbsp;noise
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" noise">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#libssim.instrument.noise.NoiseModel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;NoiseModel
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" NoiseModel">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#libssim.instrument.noise.NoiseModel.apply" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;apply
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#libssim.instrument.response" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-module"></code>&nbsp;response
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" response">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#libssim.instrument.response.InstrumentResponse" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;InstrumentResponse
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" InstrumentResponse">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#libssim.instrument.response.InstrumentResponse.resolution_only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;resolution_only
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#libssim.instrument.response.InstrumentResponse.noise_free" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;noise_free
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#libssim.instrument.response.InstrumentResponse.apply" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;apply
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Docs
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Project Docs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project_goal/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Goal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development_rules/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development Rules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../implementation_plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation Plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../validation_strategy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation Strategy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../methods_outline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Methods Outline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ai_instructions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI Instructions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#libssim.instrument.spectrometer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-module"></code>&nbsp;spectrometer
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" spectrometer">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#libssim.instrument.spectrometer.InstrumentalProfile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;InstrumentalProfile
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" InstrumentalProfile">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#libssim.instrument.spectrometer.InstrumentalProfile.slit_bandpass_m" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code>&nbsp;slit_bandpass_m
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#libssim.instrument.spectrometer.InstrumentalProfile.gaussian_fwhm_m" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code>&nbsp;gaussian_fwhm_m
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#libssim.instrument.spectrometer.InstrumentalProfile.fwhm_m" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code>&nbsp;fwhm_m
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#libssim.instrument.spectrometer.InstrumentalProfile.kernel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;kernel
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#libssim.instrument.spectrometer.InstrumentalProfile.convolve" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;convolve
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#libssim.instrument.spectrometer.InstrumentalProfile.sample_to_pixels" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;sample_to_pixels
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#libssim.instrument.spectrometer.diffraction_limited_bandpass_m" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;diffraction_limited_bandpass_m
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#libssim.instrument.optics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-module"></code>&nbsp;optics
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" optics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#libssim.instrument.optics.CollectionOptics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;CollectionOptics
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" CollectionOptics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#libssim.instrument.optics.CollectionOptics.efficiency" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;efficiency
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#libssim.instrument.optics.CollectionOptics.apply" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;apply
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#libssim.instrument.optics.tabulated_efficiency" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;tabulated_efficiency
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#libssim.instrument.noise" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-module"></code>&nbsp;noise
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" noise">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#libssim.instrument.noise.NoiseModel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;NoiseModel
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" NoiseModel">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#libssim.instrument.noise.NoiseModel.apply" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;apply
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#libssim.instrument.response" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-module"></code>&nbsp;response
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" response">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#libssim.instrument.response.InstrumentResponse" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;InstrumentResponse
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" InstrumentResponse">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#libssim.instrument.response.InstrumentResponse.resolution_only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;resolution_only
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#libssim.instrument.response.InstrumentResponse.noise_free" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;noise_free
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#libssim.instrument.response.InstrumentResponse.apply" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;apply
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="instrument">Instrument<a class="headerlink" href="#instrument" title="Permanent link">&para;</a></h1>
+<p>Everything between the plasma and the recorded counts: the
+line-spread function (Gaussian, triangular, or Voigt), collection
+optics and wavelength-dependent spectral efficiency, detector pixel
+sampling, and the shot/read/dark noise model.</p>
+
+
+<div class="doc doc-object doc-module">
+
+
+
+<h2 id="libssim.instrument.spectrometer" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-module"></code>            <span class="doc doc-object-name doc-module-name">spectrometer</span>
+
+
+<a href="#libssim.instrument.spectrometer" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents first">
+
+        <p>Instrumental line-spread function and spectral-resolution effects
+(Phase 4).</p>
+
+
+<details class="physical-context-(herrera-2008)" open>
+  <summary>Physical context (Herrera 2008)</summary>
+  <p>A real spectrometer broadens every monochromatic input into the
+instrumental line profile (Ch. 3, pp. 56-60). Its width is set by the
+slits through the geometric spectral bandpass, Eq. 3-19, p. 57:</p>
+<div class="arithmatex">\[
+\Delta\lambda_s \;=\; R_d\, W_{\mathrm{slit}}
+\]</div>
+<p>with <span class="arithmatex">\(R_d\)</span> the reciprocal linear dispersion (nm mm<span class="arithmatex">\(^{-1}\)</span>) and
+<span class="arithmatex">\(W_{\mathrm{slit}}\)</span> the slit width; validity is bounded below by the
+diffraction-limited bandpass, Eq. 3-20, p. 59
+(<span class="arithmatex">\(\Delta\lambda_d = R_d\, w_d\)</span> with <span class="arithmatex">\(w_d = 2 f \lambda / a\)</span>). The
+shape is triangular for equal entrance/exit slits (Fig. 3-5, p. 64),
+but "Doppler and instrumental line profiles usually have a Gaussian
+distribution" (p. 59) — the Gaussian is the thesis' working treatment
+and the default here (also the Phase 4 acceptance criterion). Gaussian
+widths combine in quadrature (Eq. 3-22, p. 60):</p>
+<div class="arithmatex">\[
+\Delta\lambda_G \;=\;
+\sqrt{\Delta\lambda_D^{2} + \Delta\lambda_I^{2}}
+\]</div>
+<p>which is the validation identity for the convolution implemented here.</p>
+</details>
+
+<details class="implementation-decisions-(documented-per-development_rules.md)" open>
+  <summary>Implementation Decisions (documented per development_rules.md)</summary>
+  <ul>
+<li>Convolution is discrete on the spectrum's own grid, which must be
+  uniform (checked); the kernel is normalized to unit <em>sum</em>, making
+  the convolution flux-conserving on the grid.</li>
+<li>Edges use zero padding (numpy 'same' mode): within half a kernel of
+  the grid ends the response is dimmed. Pad the wavelength grid beyond
+  the region of interest — the same discipline as for Lorentzian line
+  wings (line_profiles docs).</li>
+<li>The instrumental FWHM must be resolved by <span class="arithmatex">\(\ge 3\)</span> grid steps, else
+  the discrete kernel misrepresents the profile and the call raises.</li>
+<li>Aberrations enter as an optional extra Gaussian FWHM combined in
+  quadrature (Eq. 3-22) — the thesis measures the combined function
+  rather than modeling each aberration (Ch. 4, pp. 84-88).</li>
+<li>Optional "voigt" shape: measured instrument functions of real
+  (especially echelle) spectrographs show a non-negligible Lorentzian
+  component on top of the Gaussian core (e.g. Hansen, DTU PhD thesis,
+  Figs. 3.3.3-3.3.4: Hg-lamp Voigt fits with
+  <span class="arithmatex">\(\mathrm{FWHM}_\gamma \approx \tfrac{1}{2}\,\mathrm{FWHM}_\sigma\)</span>).
+  The "voigt" LSF keeps Eq. 3-19 (+ aberrations in quadrature) as the
+  <em>Gaussian</em> part and adds a user-supplied Lorentzian FWHM
+  (<code>lorentzian_fwhm_m</code>, from an instrument-function calibration).
+  Kernel wings extend to <span class="arithmatex">\(\max(5\sigma,\, 40\,\mathrm{FWHM}_L)\)</span> so
+  the truncated Lorentzian area loss stays below ~1%; unit-sum
+  normalization then makes it flux-conserving on the grid.</li>
+</ul>
+<p>Units: SI (m); slit width and dispersion accepted in their
+conventional units (um, nm/mm) and converted internally.</p>
+</details>
+
+<details class="references" open>
+  <summary>References</summary>
+  <p>Herrera, K.K. (2008). From Sample to Signal in Laser-Induced Breakdown
+Spectroscopy. PhD Dissertation, University of Florida. Eq. 3-19 p. 57;
+Eq. 3-20 p. 59; Eq. 3-22 p. 60; Fig. 3-5 p. 64; Ch. 4 pp. 84-88.</p>
+</details>
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="libssim.instrument.spectrometer.InstrumentalProfile" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <span class="doc doc-object-name doc-class-name">InstrumentalProfile</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+<a href="#libssim.instrument.spectrometer.InstrumentalProfile" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">InstrumentalProfile</span><span class="p">(</span><span class="n">reciprocal_dispersion_nm_per_mm</span><span class="p">:</span> <span class="n"><span title="float">float</span></span><span class="p">,</span> <span class="n">slit_width_um</span><span class="p">:</span> <span class="n"><span title="float">float</span></span><span class="p">,</span> <span class="n">aberration_fwhm_m</span><span class="p">:</span> <span class="n"><span title="float">float</span></span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">shape</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">=</span> <span class="s1">&#39;gaussian&#39;</span><span class="p">,</span> <span class="n">lorentzian_fwhm_m</span><span class="p">:</span> <span class="n"><span title="float">float</span></span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+
+
+        <p>Slit-controlled instrumental line-spread function (LSF).</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>reciprocal_dispersion_nm_per_mm</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><span class="arithmatex">\(R_d\)</span> of Eq. 3-19 (&gt; 0), a property of the spectrograph
+(thesis Ch. 4: 2nd-order polynomial in wavelength, Fig. 4-10;
+supply the value for your working window).</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>slit_width_um</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Entrance-slit width (&gt; 0).</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>aberration_fwhm_m</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Extra Gaussian broadening combined in quadrature (Eq. 3-22),
+default 0.</p>
+              </div>
+            </td>
+            <td>
+                  <code>0.0</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>shape</code>
+            </td>
+            <td>
+                  <code>(&#39;gaussian&#39;, &#39;triangular&#39;, &#39;voigt&#39;)</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>LSF shape: Gaussian (default; p. 59), triangular (equal
+entrance/exit slits, Fig. 3-5, p. 64), or Voigt (Gaussian core
+of Eq. 3-19 + measured Lorentzian component; module notes).
+The triangular option ignores <code>aberration_fwhm_m</code>
+cross-combination subtleties and applies quadrature to its
+FWHM as an approximation (documented).</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#34;gaussian&#34;</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>lorentzian_fwhm_m</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Lorentzian FWHM of the "voigt" LSF (m, &gt;= 0; from an
+instrument-function calibration). Only valid with
+shape="voigt"; zero degenerates to the Gaussian LSF.</p>
+              </div>
+            </td>
+            <td>
+                  <code>0.0</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<details class="note" open>
+  <summary>Notes</summary>
+  <p>FWHM (Eq. 3-19): <span class="arithmatex">\(\Delta\lambda_I = 10^{-6}\, R_d\, W_{\mathrm{slit}}\)</span>
+with <span class="arithmatex">\(R_d\)</span> in nm/mm and <span class="arithmatex">\(W_{\mathrm{slit}}\)</span> in m.</p>
+</details>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="libssim.instrument.spectrometer.InstrumentalProfile.slit_bandpass_m" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code>            <span class="doc doc-object-name doc-attribute-name">slit_bandpass_m</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+<a href="#libssim.instrument.spectrometer.InstrumentalProfile.slit_bandpass_m" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">slit_bandpass_m</span><span class="p">:</span> <span class="n"><span title="float">float</span></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Geometric spectral bandpass
+<span class="arithmatex">\(\Delta\lambda_s = R_d\, W_{\mathrm{slit}}\)</span> (Eq. 3-19).</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="libssim.instrument.spectrometer.InstrumentalProfile.gaussian_fwhm_m" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code>            <span class="doc doc-object-name doc-attribute-name">gaussian_fwhm_m</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+<a href="#libssim.instrument.spectrometer.InstrumentalProfile.gaussian_fwhm_m" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">gaussian_fwhm_m</span><span class="p">:</span> <span class="n"><span title="float">float</span></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Gaussian part: slit bandpass (+) aberrations in quadrature
+(Eq. 3-22).</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="libssim.instrument.spectrometer.InstrumentalProfile.fwhm_m" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code>            <span class="doc doc-object-name doc-attribute-name">fwhm_m</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+<a href="#libssim.instrument.spectrometer.InstrumentalProfile.fwhm_m" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">fwhm_m</span><span class="p">:</span> <span class="n"><span title="float">float</span></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Total instrumental FWHM. Gaussian/triangular: the quadrature
+width (Eq. 3-22). Voigt: Whiting-type estimate (inverse
+Eq. 5-18) of the Gaussian part combined with
+<code>lorentzian_fwhm_m</code>.</p>
+
+    </div>
+
+</div>
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="libssim.instrument.spectrometer.InstrumentalProfile.kernel" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">kernel</span>
+
+
+<a href="#libssim.instrument.spectrometer.InstrumentalProfile.kernel" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">kernel</span><span class="p">(</span><span class="n">grid_step_m</span><span class="p">:</span> <span class="n"><span title="float">float</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="numpy.typing.NDArray">NDArray</span></span><span class="p">[</span><span class="n"><span title="numpy.float64">float64</span></span><span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Discrete unit-sum LSF kernel for a uniform grid step.</p>
+<p>Gaussian: sampled to <span class="arithmatex">\(\pm 5\sigma\)</span>. Triangular: half-base equal
+to the FWHM (a triangle's FWHM is half its base, Fig. 3-5).</p>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="ValueError">ValueError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If the FWHM spans fewer than 3 grid steps (unresolved
+kernel — refine the wavelength grid).</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src\libssim\instrument\spectrometer.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span>
+<span class="normal">226</span>
+<span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span>
+<span class="normal">243</span>
+<span class="normal">244</span>
+<span class="normal">245</span>
+<span class="normal">246</span>
+<span class="normal">247</span>
+<span class="normal">248</span>
+<span class="normal">249</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span>
+<span class="normal">257</span>
+<span class="normal">258</span>
+<span class="normal">259</span>
+<span class="normal">260</span>
+<span class="normal">261</span>
+<span class="normal">262</span>
+<span class="normal">263</span>
+<span class="normal">264</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">kernel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grid_step_m</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Discrete unit-sum LSF kernel for a uniform grid step.</span>
+
+<span class="sd">    Gaussian: sampled to $\pm 5\sigma$. Triangular: half-base equal</span>
+<span class="sd">    to the FWHM (a triangle&#39;s FWHM is half its base, Fig. 3-5).</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If the FWHM spans fewer than 3 grid steps (unresolved</span>
+<span class="sd">        kernel — refine the wavelength grid).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">step</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">grid_step_m</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">step</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">step</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;grid_step_m must be finite and &gt; 0&quot;</span><span class="p">)</span>
+    <span class="n">fwhm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fwhm_m</span>
+    <span class="k">if</span> <span class="n">fwhm</span> <span class="o">&lt;</span> <span class="mf">3.0</span> <span class="o">*</span> <span class="n">step</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;instrumental FWHM </span><span class="si">{</span><span class="n">fwhm</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2"> m spans fewer than 3 grid &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;steps (</span><span class="si">{</span><span class="n">step</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2"> m); refine the wavelength grid so the &quot;</span>
+            <span class="s2">&quot;LSF is resolved&quot;</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="s2">&quot;gaussian&quot;</span><span class="p">:</span>
+        <span class="n">sigma</span> <span class="o">=</span> <span class="n">fwhm</span> <span class="o">/</span> <span class="n">_GAUSS_FWHM_PER_SIGMA</span>
+        <span class="n">half_width</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="mf">5.0</span> <span class="o">*</span> <span class="n">sigma</span> <span class="o">/</span> <span class="n">step</span><span class="p">))</span>
+        <span class="n">offsets</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="n">half_width</span><span class="p">,</span> <span class="n">half_width</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">step</span>
+        <span class="n">kernel</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">offsets</span> <span class="o">/</span> <span class="n">sigma</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="s2">&quot;voigt&quot;</span><span class="p">:</span>
+        <span class="n">sigma</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gaussian_fwhm_m</span> <span class="o">/</span> <span class="n">_GAUSS_FWHM_PER_SIGMA</span>
+        <span class="c1"># Lorentzian wings need a much wider support than 5 sigma:</span>
+        <span class="c1"># beyond +/- 40 FWHM_L the truncated area is below ~1%.</span>
+        <span class="n">extent</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mf">5.0</span> <span class="o">*</span> <span class="n">sigma</span><span class="p">,</span> <span class="mf">40.0</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">lorentzian_fwhm_m</span><span class="p">)</span>
+        <span class="n">half_width</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">extent</span> <span class="o">/</span> <span class="n">step</span><span class="p">))</span>
+        <span class="c1"># The Voigt is even in detuning: evaluate one half via the</span>
+        <span class="c1"># shared normalized profile (at a um-scale anchor so the</span>
+        <span class="c1"># detunings survive the round-trip to ~1e-12 relative) and</span>
+        <span class="c1"># mirror it, making the kernel symmetric by construction.</span>
+        <span class="n">anchor</span> <span class="o">=</span> <span class="mf">1.0e-6</span>
+        <span class="n">positive</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">half_width</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">step</span>
+        <span class="n">half_kernel</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">voigt_profile_wavelength_m</span><span class="p">(</span>
+            <span class="n">anchor</span> <span class="o">+</span> <span class="n">positive</span><span class="p">,</span> <span class="n">anchor</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">gaussian_fwhm_m</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lorentzian_fwhm_m</span><span class="p">,</span>
+        <span class="p">))</span>
+        <span class="n">kernel</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">half_kernel</span><span class="p">[:</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">half_kernel</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>  <span class="c1"># triangular</span>
+        <span class="n">half_width</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">fwhm</span> <span class="o">/</span> <span class="n">step</span><span class="p">))</span>
+        <span class="n">offsets</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="n">half_width</span><span class="p">,</span> <span class="n">half_width</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">step</span>
+        <span class="n">kernel</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">offsets</span><span class="p">)</span> <span class="o">/</span> <span class="n">fwhm</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">kernel</span> <span class="o">/</span> <span class="n">kernel</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>  <span class="c1"># unit sum: flux-conserving</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="libssim.instrument.spectrometer.InstrumentalProfile.convolve" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">convolve</span>
+
+
+<a href="#libssim.instrument.spectrometer.InstrumentalProfile.convolve" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">convolve</span><span class="p">(</span><span class="n">spectrum</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="            Spectrum
+
+
+  
+      dataclass
+   (libssim.core.spectrum.Spectrum)" href="../core/#libssim.core.spectrum.Spectrum">Spectrum</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="            Spectrum
+
+
+  
+      dataclass
+   (libssim.core.spectrum.Spectrum)" href="../core/#libssim.core.spectrum.Spectrum">Spectrum</a></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Convolve a spectrum with the LSF (finite spectral resolution).</p>
+<p>Requires a uniform wavelength grid (relative step deviation
+&lt; 1e-6). Zero-padded edges (module notes).</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src\libssim\instrument\spectrometer.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">266</span>
+<span class="normal">267</span>
+<span class="normal">268</span>
+<span class="normal">269</span>
+<span class="normal">270</span>
+<span class="normal">271</span>
+<span class="normal">272</span>
+<span class="normal">273</span>
+<span class="normal">274</span>
+<span class="normal">275</span>
+<span class="normal">276</span>
+<span class="normal">277</span>
+<span class="normal">278</span>
+<span class="normal">279</span>
+<span class="normal">280</span>
+<span class="normal">281</span>
+<span class="normal">282</span>
+<span class="normal">283</span>
+<span class="normal">284</span>
+<span class="normal">285</span>
+<span class="normal">286</span>
+<span class="normal">287</span>
+<span class="normal">288</span>
+<span class="normal">289</span>
+<span class="normal">290</span>
+<span class="normal">291</span>
+<span class="normal">292</span>
+<span class="normal">293</span>
+<span class="normal">294</span>
+<span class="normal">295</span>
+<span class="normal">296</span>
+<span class="normal">297</span>
+<span class="normal">298</span>
+<span class="normal">299</span>
+<span class="normal">300</span>
+<span class="normal">301</span>
+<span class="normal">302</span>
+<span class="normal">303</span>
+<span class="normal">304</span>
+<span class="normal">305</span>
+<span class="normal">306</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">convolve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spectrum</span><span class="p">:</span> <span class="n">Spectrum</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Spectrum</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convolve a spectrum with the LSF (finite spectral resolution).</span>
+
+<span class="sd">    Requires a uniform wavelength grid (relative step deviation</span>
+<span class="sd">    &lt; 1e-6). Zero-padded edges (module notes).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">wavelength</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">spectrum</span><span class="o">.</span><span class="n">wavelength_m</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="n">steps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">wavelength</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">wavelength</span><span class="o">.</span><span class="n">size</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">steps</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;spectrum grid must be increasing with &gt;= 2 points&quot;</span><span class="p">)</span>
+    <span class="n">step</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">steps</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">steps</span> <span class="o">-</span> <span class="n">step</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mf">1e-6</span> <span class="o">*</span> <span class="n">step</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;convolution requires a uniform wavelength grid &quot;</span>
+            <span class="s2">&quot;(resample first — analysis.resample)&quot;</span>
+        <span class="p">)</span>
+    <span class="n">kernel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kernel</span><span class="p">(</span><span class="n">step</span><span class="p">)</span>
+    <span class="c1"># &#39;same&#39;-with-respect-to-the-spectrum regardless of which of</span>
+    <span class="c1"># the two is longer (numpy&#39;s mode=&quot;same&quot; returns the LONGER</span>
+    <span class="c1"># length, which breaks when a wide-winged Voigt kernel exceeds</span>
+    <span class="c1"># the grid span).</span>
+    <span class="n">full</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span><span class="n">spectrum</span><span class="o">.</span><span class="n">intensity</span><span class="p">,</span> <span class="n">kernel</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;full&quot;</span><span class="p">)</span>
+    <span class="n">start</span> <span class="o">=</span> <span class="p">(</span><span class="n">kernel</span><span class="o">.</span><span class="n">size</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+    <span class="n">convolved</span> <span class="o">=</span> <span class="n">full</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">start</span> <span class="o">+</span> <span class="n">spectrum</span><span class="o">.</span><span class="n">intensity</span><span class="o">.</span><span class="n">size</span><span class="p">]</span>
+    <span class="n">metadata</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">spectrum</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span>
+    <span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;instrumental_fwhm_m&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fwhm_m</span>
+    <span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;instrumental_shape&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="s2">&quot;voigt&quot;</span><span class="p">:</span>
+        <span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;instrumental_lorentzian_fwhm_m&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lorentzian_fwhm_m</span>
+        <span class="p">)</span>
+    <span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;slit_width_um&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">slit_width_um</span>
+    <span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;reciprocal_dispersion_nm_per_mm&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reciprocal_dispersion_nm_per_mm</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">Spectrum</span><span class="p">(</span>
+        <span class="n">wavelength_m</span><span class="o">=</span><span class="n">spectrum</span><span class="o">.</span><span class="n">wavelength_m</span><span class="p">,</span>
+        <span class="n">intensity</span><span class="o">=</span><span class="n">convolved</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
+    <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="libssim.instrument.spectrometer.InstrumentalProfile.sample_to_pixels" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">sample_to_pixels</span>
+
+
+<a href="#libssim.instrument.spectrometer.InstrumentalProfile.sample_to_pixels" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">sample_to_pixels</span><span class="p">(</span><span class="n">spectrum</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="            Spectrum
+
+
+  
+      dataclass
+   (libssim.core.spectrum.Spectrum)" href="../core/#libssim.core.spectrum.Spectrum">Spectrum</a></span><span class="p">,</span> <span class="n">n_pixels</span><span class="p">:</span> <span class="n"><span title="int">int</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="            Spectrum
+
+
+  
+      dataclass
+   (libssim.core.spectrum.Spectrum)" href="../core/#libssim.core.spectrum.Spectrum">Spectrum</a></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Bin-average the spectrum onto <code>n_pixels</code> equal wavelength bins
+(multi-channel detector sampling; exit "slit" = pixel, Ch. 3
+p. 57 bullet list).</p>
+<p>Mean-preserving within each bin; bin centers become the new
+wavelength axis.</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src\libssim\instrument\spectrometer.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">309</span>
+<span class="normal">310</span>
+<span class="normal">311</span>
+<span class="normal">312</span>
+<span class="normal">313</span>
+<span class="normal">314</span>
+<span class="normal">315</span>
+<span class="normal">316</span>
+<span class="normal">317</span>
+<span class="normal">318</span>
+<span class="normal">319</span>
+<span class="normal">320</span>
+<span class="normal">321</span>
+<span class="normal">322</span>
+<span class="normal">323</span>
+<span class="normal">324</span>
+<span class="normal">325</span>
+<span class="normal">326</span>
+<span class="normal">327</span>
+<span class="normal">328</span>
+<span class="normal">329</span>
+<span class="normal">330</span>
+<span class="normal">331</span>
+<span class="normal">332</span>
+<span class="normal">333</span>
+<span class="normal">334</span>
+<span class="normal">335</span>
+<span class="normal">336</span>
+<span class="normal">337</span>
+<span class="normal">338</span>
+<span class="normal">339</span>
+<span class="normal">340</span>
+<span class="normal">341</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">sample_to_pixels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spectrum</span><span class="p">:</span> <span class="n">Spectrum</span><span class="p">,</span> <span class="n">n_pixels</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Spectrum</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Bin-average the spectrum onto `n_pixels` equal wavelength bins</span>
+<span class="sd">    (multi-channel detector sampling; exit &quot;slit&quot; = pixel, Ch. 3</span>
+<span class="sd">    p. 57 bullet list).</span>
+
+<span class="sd">    Mean-preserving within each bin; bin centers become the new</span>
+<span class="sd">    wavelength axis.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">pixels</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">n_pixels</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">pixels</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">pixels</span> <span class="o">&gt;</span> <span class="n">spectrum</span><span class="o">.</span><span class="n">wavelength_m</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;n_pixels must be between 1 and the number of grid points&quot;</span>
+        <span class="p">)</span>
+    <span class="n">edges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span>
+        <span class="n">spectrum</span><span class="o">.</span><span class="n">wavelength_m</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">spectrum</span><span class="o">.</span><span class="n">wavelength_m</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">pixels</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="p">)</span>
+    <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">edges</span><span class="p">,</span> <span class="n">spectrum</span><span class="o">.</span><span class="n">wavelength_m</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="s2">&quot;right&quot;</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="mi">0</span><span class="p">,</span>
+        <span class="n">pixels</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">sums</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">bincount</span><span class="p">(</span>
+        <span class="n">indices</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="n">spectrum</span><span class="o">.</span><span class="n">intensity</span><span class="p">,</span> <span class="n">minlength</span><span class="o">=</span><span class="n">pixels</span>
+    <span class="p">)</span>
+    <span class="n">counts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">bincount</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="n">minlength</span><span class="o">=</span><span class="n">pixels</span><span class="p">)</span>
+    <span class="n">intensity</span> <span class="o">=</span> <span class="n">sums</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">counts</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">centers</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">edges</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">edges</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+    <span class="n">metadata</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">spectrum</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span>
+    <span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;n_pixels&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pixels</span>
+    <span class="k">return</span> <span class="n">Spectrum</span><span class="p">(</span>
+        <span class="n">wavelength_m</span><span class="o">=</span><span class="n">centers</span><span class="p">,</span> <span class="n">intensity</span><span class="o">=</span><span class="n">intensity</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span>
+    <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="libssim.instrument.spectrometer.diffraction_limited_bandpass_m" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <span class="doc doc-object-name doc-function-name">diffraction_limited_bandpass_m</span>
+
+
+<a href="#libssim.instrument.spectrometer.diffraction_limited_bandpass_m" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">diffraction_limited_bandpass_m</span><span class="p">(</span><span class="n">reciprocal_dispersion_nm_per_mm</span><span class="p">:</span> <span class="n"><span title="float">float</span></span><span class="p">,</span> <span class="n">focal_length_m</span><span class="p">:</span> <span class="n"><span title="float">float</span></span><span class="p">,</span> <span class="n">wavelength_m</span><span class="p">:</span> <span class="n"><span title="float">float</span></span><span class="p">,</span> <span class="n">beam_width_m</span><span class="p">:</span> <span class="n"><span title="float">float</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="float">float</span></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Diffraction-limited spectral bandpass, Eq. 3-20, p. 59
+(Herrera 2008): <span class="arithmatex">\(\Delta\lambda_d = R_d\, w_d\)</span> with
+<span class="arithmatex">\(w_d = 2 f \lambda / a\)</span>.</p>
+<p>The slit model of Eq. 3-19 is meaningful only for slit widths above
+<span class="arithmatex">\(w_d\)</span>; <code>InstrumentalProfile</code> warns against configurations below it.</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src\libssim\instrument\spectrometer.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">diffraction_limited_bandpass_m</span><span class="p">(</span>
+    <span class="n">reciprocal_dispersion_nm_per_mm</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">focal_length_m</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">wavelength_m</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">beam_width_m</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Diffraction-limited spectral bandpass, Eq. 3-20, p. 59</span>
+<span class="sd">    (Herrera 2008): $\Delta\lambda_d = R_d\, w_d$ with</span>
+<span class="sd">    $w_d = 2 f \lambda / a$.</span>
+
+<span class="sd">    The slit model of Eq. 3-19 is meaningful only for slit widths above</span>
+<span class="sd">    $w_d$; `InstrumentalProfile` warns against configurations below it.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="p">(</span>
+        <span class="p">(</span><span class="s2">&quot;reciprocal_dispersion_nm_per_mm&quot;</span><span class="p">,</span> <span class="n">reciprocal_dispersion_nm_per_mm</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;focal_length_m&quot;</span><span class="p">,</span> <span class="n">focal_length_m</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;wavelength_m&quot;</span><span class="p">,</span> <span class="n">wavelength_m</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;beam_width_m&quot;</span><span class="p">,</span> <span class="n">beam_width_m</span><span class="p">),</span>
+    <span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">value</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">value</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> must be finite and &gt; 0&quot;</span><span class="p">)</span>
+    <span class="n">slit_d</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">focal_length_m</span> <span class="o">*</span> <span class="n">wavelength_m</span> <span class="o">/</span> <span class="n">beam_width_m</span>
+    <span class="c1"># R_d in nm/mm = 1e-6 (m of wavelength per m of focal plane).</span>
+    <span class="k">return</span> <span class="n">reciprocal_dispersion_nm_per_mm</span> <span class="o">*</span> <span class="mf">1.0e-6</span> <span class="o">*</span> <span class="n">slit_d</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-module">
+
+
+
+<h2 id="libssim.instrument.optics" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-module"></code>            <span class="doc doc-object-name doc-module-name">optics</span>
+
+
+<a href="#libssim.instrument.optics" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents first">
+
+        <p>Collection-optics spectral efficiency and radiometric scaling
+(Phase 4).</p>
+
+
+<details class="physical-context-(herrera-2008)" open>
+  <summary>Physical context (Herrera 2008)</summary>
+  <p>The measured line intensity is the physical emission scaled by the
+optical efficiency of the detection system, Eq. 5-9, p. 104:</p>
+<div class="arithmatex">\[
+I_{ki}^{\mathrm{meas}} \;=\; F_{\mathrm{det}}(\lambda)\, I_{ki},
+\qquad
+F_{\mathrm{det}}(\lambda) \;=\;
+F_{\mathrm{rel}}(\lambda)\, F_{\mathrm{abs}}
+\quad \text{(Eqs. 5-9..5-11)}
+\]</div>
+<p>with <span class="arithmatex">\(F_{\mathrm{rel}}\)</span> the wavelength-dependent <em>relative</em> efficiency
+(measured with calibrated lamps, Ch. 4, pp. 84-88) and
+<span class="arithmatex">\(F_{\mathrm{abs}}\)</span> a wavelength-independent absolute factor. CF-LIBS
+divides this response out of measured spectra (Eq. 5-10); the forward
+model applies it to synthetic ones — same physics, opposite direction.</p>
+<p><code>CollectionOptics</code> implements that scaling. The absolute factor is the
+user's calibration burden: it lumps collection etendue, transmission,
+detector quantum efficiency, gain and any exposure-to-counts
+conversion into one number with units [output counts per input
+intensity unit]. Leave it at 1.0 to stay in physical radiometric
+units.</p>
+</details>
+
+<details class="units-and-conventions" open>
+  <summary>Units and Conventions</summary>
+  <p>Pure per-wavelength scaling:
+<span class="arithmatex">\(\mathrm{output}(\lambda) = \mathrm{input}(\lambda)\,
+F_{\mathrm{rel}}(\lambda)\, F_{\mathrm{abs}}\)</span>.
+The relative curve is dimensionless (peak normalization is the
+caller's convention); metadata records what was applied.</p>
+</details>
+
+<details class="references" open>
+  <summary>References</summary>
+  <p>Herrera, K.K. (2008). From Sample to Signal in Laser-Induced Breakdown
+Spectroscopy. PhD Dissertation, University of Florida. Eqs. 5-9, 5-10,
+5-11 p. 104; Ch. 4 pp. 84-88 (efficiency calibration).</p>
+</details>
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="libssim.instrument.optics.CollectionOptics" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <span class="doc doc-object-name doc-class-name">CollectionOptics</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+<a href="#libssim.instrument.optics.CollectionOptics" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">CollectionOptics</span><span class="p">(</span><span class="n">relative_efficiency</span><span class="p">:</span> <span class="n"><span title="typing.Optional">Optional</span></span><span class="p">[</span><span class="n"><span title="libssim.instrument.optics.EfficiencyCurve">EfficiencyCurve</span></span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">absolute_factor</span><span class="p">:</span> <span class="n"><span title="float">float</span></span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+
+
+        <p>Detection-system response
+<span class="arithmatex">\(F_{\mathrm{det}}(\lambda) = F_{\mathrm{rel}}(\lambda)\,
+F_{\mathrm{abs}}\)</span> (Eqs. 5-9..5-11, p. 104).</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>relative_efficiency</code>
+            </td>
+            <td>
+                  <code><span title="libssim.instrument.optics.EfficiencyCurve">EfficiencyCurve</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><span class="arithmatex">\(F_{\mathrm{rel}}(\lambda)\)</span>, dimensionless (default:
+flat 1.0). Use <code>tabulated_efficiency</code> for measured curves.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>absolute_factor</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p><span class="arithmatex">\(F_{\mathrm{abs}}\)</span> plus any radiometric conversion (module
+docstring), &gt; 0, default 1.0.</p>
+              </div>
+            </td>
+            <td>
+                  <code>1.0</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="libssim.instrument.optics.CollectionOptics.efficiency" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">efficiency</span>
+
+
+<a href="#libssim.instrument.optics.CollectionOptics.efficiency" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">efficiency</span><span class="p">(</span><span class="n">wavelength_m</span><span class="p">:</span> <span class="n"><span title="numpy.typing.NDArray">NDArray</span></span><span class="p">[</span><span class="n"><span title="numpy.float64">float64</span></span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n"><span title="numpy.typing.NDArray">NDArray</span></span><span class="p">[</span><span class="n"><span title="numpy.float64">float64</span></span><span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p><span class="arithmatex">\(F_{\mathrm{det}}(\lambda)\)</span> on the given grid (the
+dimensionless relative curve times <span class="arithmatex">\(F_{\mathrm{abs}}\)</span>).</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src\libssim\instrument\optics.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">efficiency</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span> <span class="n">wavelength_m</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;$F_{\mathrm{det}}(\lambda)$ on the given grid (the</span>
+<span class="sd">    dimensionless relative curve times $F_{\mathrm{abs}}$).&quot;&quot;&quot;</span>
+    <span class="n">grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">wavelength_m</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">relative_efficiency</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">relative</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">relative</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">relative_efficiency</span><span class="p">(</span><span class="n">grid</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">relative</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">grid</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;relative_efficiency must return an array matching the &quot;</span>
+                <span class="s2">&quot;wavelength grid&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">relative</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">relative</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;relative_efficiency must be finite and &gt;= 0&quot;</span>
+            <span class="p">)</span>
+    <span class="k">return</span> <span class="n">relative</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">absolute_factor</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="libssim.instrument.optics.CollectionOptics.apply" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">apply</span>
+
+
+<a href="#libssim.instrument.optics.CollectionOptics.apply" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">apply</span><span class="p">(</span><span class="n">spectrum</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="            Spectrum
+
+
+  
+      dataclass
+   (libssim.core.spectrum.Spectrum)" href="../core/#libssim.core.spectrum.Spectrum">Spectrum</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="            Spectrum
+
+
+  
+      dataclass
+   (libssim.core.spectrum.Spectrum)" href="../core/#libssim.core.spectrum.Spectrum">Spectrum</a></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Scale a spectrum by <span class="arithmatex">\(F_{\mathrm{det}}(\lambda)\)</span> (Eq. 5-9
+applied forward).</p>
+<p>Returns a new <code>Spectrum</code>; metadata gains the applied absolute
+factor and whether a relative curve was used.</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src\libssim\instrument\optics.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spectrum</span><span class="p">:</span> <span class="n">Spectrum</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Spectrum</span><span class="p">:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Scale a spectrum by $F_{\mathrm{det}}(\lambda)$ (Eq. 5-9</span>
+<span class="sd">    applied forward).</span>
+
+<span class="sd">    Returns a new `Spectrum`; metadata gains the applied absolute</span>
+<span class="sd">    factor and whether a relative curve was used.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">efficiency</span><span class="p">(</span><span class="n">spectrum</span><span class="o">.</span><span class="n">wavelength_m</span><span class="p">)</span>
+    <span class="n">metadata</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">spectrum</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span>
+    <span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;collection_absolute_factor&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">absolute_factor</span>
+    <span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;collection_relative_curve&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">relative_efficiency</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">Spectrum</span><span class="p">(</span>
+        <span class="n">wavelength_m</span><span class="o">=</span><span class="n">spectrum</span><span class="o">.</span><span class="n">wavelength_m</span><span class="p">,</span>
+        <span class="n">intensity</span><span class="o">=</span><span class="n">spectrum</span><span class="o">.</span><span class="n">intensity</span> <span class="o">*</span> <span class="n">response</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
+    <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="libssim.instrument.optics.tabulated_efficiency" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <span class="doc doc-object-name doc-function-name">tabulated_efficiency</span>
+
+
+<a href="#libssim.instrument.optics.tabulated_efficiency" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">tabulated_efficiency</span><span class="p">(</span><span class="n">wavelength_m</span><span class="p">:</span> <span class="n"><span title="numpy.typing.ArrayLike">ArrayLike</span></span><span class="p">,</span> <span class="n">efficiency</span><span class="p">:</span> <span class="n"><span title="numpy.typing.ArrayLike">ArrayLike</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="libssim.instrument.optics.EfficiencyCurve">EfficiencyCurve</span></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Build an <code>EfficiencyCurve</code> by linear interpolation of a measured
+table (the Ch. 4 calibration product). Outside the tabulated range
+the endpoint values are held (np.interp clamping) — extrapolating a
+measured response would be meaningless.</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src\libssim\instrument\optics.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span>
+<span class="normal">85</span>
+<span class="normal">86</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">tabulated_efficiency</span><span class="p">(</span>
+    <span class="n">wavelength_m</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span>
+    <span class="n">efficiency</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EfficiencyCurve</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Build an `EfficiencyCurve` by linear interpolation of a measured</span>
+<span class="sd">    table (the Ch. 4 calibration product). Outside the tabulated range</span>
+<span class="sd">    the endpoint values are held (np.interp clamping) — extrapolating a</span>
+<span class="sd">    measured response would be meaningless.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">lam</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">wavelength_m</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="n">eff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">efficiency</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">lam</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">lam</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">eff</span><span class="o">.</span><span class="n">shape</span> <span class="ow">or</span> <span class="n">lam</span><span class="o">.</span><span class="n">size</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;wavelength_m and efficiency must be equal-length 1-D arrays &quot;</span>
+            <span class="s2">&quot;with &gt;= 2 points&quot;</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">lam</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;wavelength_m must be strictly increasing&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">eff</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">eff</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;efficiency must be finite and &gt;= 0&quot;</span><span class="p">)</span>
+    <span class="n">lam</span> <span class="o">=</span> <span class="n">lam</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">eff</span> <span class="o">=</span> <span class="n">eff</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">curve</span><span class="p">(</span><span class="n">grid</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span> <span class="n">lam</span><span class="p">,</span> <span class="n">eff</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">curve</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-module">
+
+
+
+<h2 id="libssim.instrument.noise" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-module"></code>            <span class="doc doc-object-name doc-module-name">noise</span>
+
+
+<a href="#libssim.instrument.noise" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents first">
+
+        <p>Detector noise models (Phase 4).</p>
+
+
+<details class="physical-context" open>
+  <summary>Physical context</summary>
+  <p>The thesis records spectra with an intensified CCD (Ch. 4); like any
+photon-counting chain the signal carries:</p>
+<ul>
+<li><strong>shot noise</strong> — Poisson statistics of the detected photoelectrons
+  (variance = mean);</li>
+<li><strong>readout noise</strong> — additive Gaussian electronics noise, rms
+  <span class="arithmatex">\(\sigma_{\mathrm{read}}\)</span> counts, independent of signal;</li>
+<li><strong>dark / background offset</strong> — a mean additive level (thermal dark
+  counts, ambient background) that itself carries shot noise.</li>
+</ul>
+<p>The thesis treats these operationally (background subtraction before
+CF-LIBS analysis, p. 103) rather than with printed formulas; the
+standard statistical models implemented here follow general detector
+practice (e.g. Janesick, Scientific Charge-Coupled Devices, 2001) —
+documented extension per ai_instructions.md. They satisfy the Phase 4
+acceptance criteria (implementation_plan.md): Poisson variance equal
+to the mean, Gaussian read noise, dark-current offset.</p>
+</details>
+
+<details class="reproducibility-(cross-cutting-requirement)" open>
+  <summary>Reproducibility (cross-cutting requirement)</summary>
+  <p><code>apply</code> takes a mandatory integer seed and uses a dedicated
+<code>numpy.random.Generator</code>: the same spectrum + same seed always yields
+the identical noisy spectrum. No global random state is touched.</p>
+<p>Units: counts. Apply noise <em>after</em> the collection optics have scaled
+the spectrum to expected counts — Poisson statistics are meaningless
+on radiometric W/J units (enforced only as a documentation contract;
+the code requires non-negative intensity).</p>
+</details>
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="libssim.instrument.noise.NoiseModel" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <span class="doc doc-object-name doc-class-name">NoiseModel</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+<a href="#libssim.instrument.noise.NoiseModel" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">NoiseModel</span><span class="p">(</span><span class="n">read_noise_rms_counts</span><span class="p">:</span> <span class="n"><span title="float">float</span></span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">dark_mean_counts</span><span class="p">:</span> <span class="n"><span title="float">float</span></span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">background_mean_counts</span><span class="p">:</span> <span class="n"><span title="float">float</span></span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">include_shot_noise</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+
+
+        <p>Shot + readout + dark/background detector noise.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>read_noise_rms_counts</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Gaussian readout rms <span class="arithmatex">\(\sigma_{\mathrm{read}}\)</span> (counts, &gt;= 0;
+default 0).</p>
+              </div>
+            </td>
+            <td>
+                  <code>0.0</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>dark_mean_counts</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Mean dark level added to every sample (counts, &gt;= 0;
+default 0). Carries shot noise.</p>
+              </div>
+            </td>
+            <td>
+                  <code>0.0</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>background_mean_counts</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Mean ambient/continuum background level (counts, &gt;= 0;
+default 0). Carries shot noise.</p>
+              </div>
+            </td>
+            <td>
+                  <code>0.0</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>include_shot_noise</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Poisson-sample the (signal + dark + background) expectation
+(default True). Disable to study additive noise alone.</p>
+              </div>
+            </td>
+            <td>
+                  <code>True</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<details class="note" open>
+  <summary>Notes</summary>
+  <p>Per wavelength sample, mutually independent:</p>
+<div class="arithmatex">\[
+\mathrm{output} \;=\;
+\mathrm{Poisson}(\mathrm{signal} + \mathrm{dark} +
+\mathrm{background})
++ \mathcal{N}\!\left(0,\, \sigma_{\mathrm{read}}^{2}\right)
+\]</div>
+</details>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="libssim.instrument.noise.NoiseModel.apply" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">apply</span>
+
+
+<a href="#libssim.instrument.noise.NoiseModel.apply" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">apply</span><span class="p">(</span><span class="n">spectrum</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="            Spectrum
+
+
+  
+      dataclass
+   (libssim.core.spectrum.Spectrum)" href="../core/#libssim.core.spectrum.Spectrum">Spectrum</a></span><span class="p">,</span> <span class="n">seed</span><span class="p">:</span> <span class="n"><span title="int">int</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="            Spectrum
+
+
+  
+      dataclass
+   (libssim.core.spectrum.Spectrum)" href="../core/#libssim.core.spectrum.Spectrum">Spectrum</a></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Return a noisy copy of the spectrum (counts).</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>spectrum</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="            Spectrum
+
+
+  
+      dataclass
+   (libssim.core.spectrum.Spectrum)" href="../core/#libssim.core.spectrum.Spectrum">Spectrum</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Expected-counts spectrum (intensity &gt;= 0 required — scale
+with <code>CollectionOptics</code> first).</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>seed</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>RNG seed; identical seeds reproduce identical noise
+(reproducibility requirement).</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src\libssim\instrument\noise.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spectrum</span><span class="p">:</span> <span class="n">Spectrum</span><span class="p">,</span> <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Spectrum</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return a noisy copy of the spectrum (counts).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    spectrum : Spectrum</span>
+<span class="sd">        Expected-counts spectrum (intensity &gt;= 0 required — scale</span>
+<span class="sd">        with `CollectionOptics` first).</span>
+<span class="sd">    seed : int</span>
+<span class="sd">        RNG seed; identical seeds reproduce identical noise</span>
+<span class="sd">        (reproducibility requirement).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">intensity</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">spectrum</span><span class="o">.</span><span class="n">intensity</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">intensity</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">intensity</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;noise requires finite, non-negative expected counts; &quot;</span>
+            <span class="s2">&quot;apply CollectionOptics scaling first&quot;</span>
+        <span class="p">)</span>
+    <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">seed</span><span class="p">))</span>
+    <span class="n">expectation</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">intensity</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">dark_mean_counts</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">background_mean_counts</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">include_shot_noise</span><span class="p">:</span>
+        <span class="n">counts</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">poisson</span><span class="p">(</span><span class="n">expectation</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">counts</span> <span class="o">=</span> <span class="n">expectation</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_noise_rms_counts</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">:</span>
+        <span class="n">counts</span> <span class="o">=</span> <span class="n">counts</span> <span class="o">+</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span>
+            <span class="mf">0.0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_noise_rms_counts</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">counts</span><span class="o">.</span><span class="n">shape</span>
+        <span class="p">)</span>
+    <span class="n">metadata</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">spectrum</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span>
+    <span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;noise_seed&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+    <span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;noise_model&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;read_noise_rms_counts&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_noise_rms_counts</span><span class="p">,</span>
+        <span class="s2">&quot;dark_mean_counts&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dark_mean_counts</span><span class="p">,</span>
+        <span class="s2">&quot;background_mean_counts&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">background_mean_counts</span><span class="p">,</span>
+        <span class="s2">&quot;include_shot_noise&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">include_shot_noise</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;intensity_units&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;counts (noisy)&quot;</span>
+    <span class="k">return</span> <span class="n">Spectrum</span><span class="p">(</span>
+        <span class="n">wavelength_m</span><span class="o">=</span><span class="n">spectrum</span><span class="o">.</span><span class="n">wavelength_m</span><span class="p">,</span>
+        <span class="n">intensity</span><span class="o">=</span><span class="n">counts</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
+    <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-module">
+
+
+
+<h2 id="libssim.instrument.response" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-module"></code>            <span class="doc doc-object-name doc-module-name">response</span>
+
+
+<a href="#libssim.instrument.response" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents first">
+
+        <p>Composite instrument response pipeline (Phase 4).</p>
+<p>Chains the individual effects in their physical order:</p>
+<pre><code>physics spectrum
+  -&gt; LSF convolution        (finite resolution, spectrometer.py,
+                             Eqs. 3-19/3-22)
+  -&gt; collection efficiency  (F_det(lambda), optics.py,
+                             Eqs. 5-9..5-11 p. 104)
+  -&gt; pixel sampling         (optional; multi-channel detector)
+  -&gt; detector noise         (optional; shot/read/dark, noise.py)
+</code></pre>
+<p>Every stage is optional, and <code>resolution_only</code> / <code>noise_free</code> give the
+partially-processed spectra directly — the validation and debugging
+paths requested for comparing against physics-level results.</p>
+<p>Each stage appends its parameters to <code>Spectrum.metadata</code>, so a fully
+processed spectrum carries its complete instrument provenance next to
+the plasma/gate provenance added by the temporal layer.</p>
+
+
+<details class="references" open>
+  <summary>References</summary>
+  <p>Herrera, K.K. (2008). From Sample to Signal in Laser-Induced Breakdown
+Spectroscopy. PhD Dissertation, University of Florida. Ch. 3 pp. 56-60
+(instrumental function); Eqs. 5-9..5-11 p. 104 (detection efficiency);
+Ch. 4 pp. 84-88 (calibration).</p>
+</details>
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="libssim.instrument.response.InstrumentResponse" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <span class="doc doc-object-name doc-class-name">InstrumentResponse</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+<a href="#libssim.instrument.response.InstrumentResponse" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">InstrumentResponse</span><span class="p">(</span><span class="n">instrumental_profile</span><span class="p">:</span> <span class="n"><span title="typing.Optional">Optional</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="            InstrumentalProfile
+
+
+  
+      dataclass
+   (libssim.instrument.spectrometer.InstrumentalProfile)" href="#libssim.instrument.spectrometer.InstrumentalProfile">InstrumentalProfile</a></span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">collection_optics</span><span class="p">:</span> <span class="n"><span title="typing.Optional">Optional</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="            CollectionOptics
+
+
+  
+      dataclass
+   (libssim.instrument.optics.CollectionOptics)" href="#libssim.instrument.optics.CollectionOptics">CollectionOptics</a></span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">n_pixels</span><span class="p">:</span> <span class="n"><span title="typing.Optional">Optional</span></span><span class="p">[</span><span class="n"><span title="int">int</span></span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">noise_model</span><span class="p">:</span> <span class="n"><span title="typing.Optional">Optional</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="            NoiseModel
+
+
+  
+      dataclass
+   (libssim.instrument.noise.NoiseModel)" href="#libssim.instrument.noise.NoiseModel">NoiseModel</a></span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+
+
+        <p>Composable end-to-end instrument model.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>instrumental_profile</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="            InstrumentalProfile
+
+
+  
+      dataclass
+   (libssim.instrument.spectrometer.InstrumentalProfile)" href="#libssim.instrument.spectrometer.InstrumentalProfile">InstrumentalProfile</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Finite spectral resolution (LSF convolution). None = perfect
+resolution.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>collection_optics</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="            CollectionOptics
+
+
+  
+      dataclass
+   (libssim.instrument.optics.CollectionOptics)" href="#libssim.instrument.optics.CollectionOptics">CollectionOptics</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Spectral efficiency and radiometric scaling. None = unit
+response.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>n_pixels</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If given, bin-average onto this many detector pixels after
+convolution/scaling.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>noise_model</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="            NoiseModel
+
+
+  
+      dataclass
+   (libssim.instrument.noise.NoiseModel)" href="#libssim.instrument.noise.NoiseModel">NoiseModel</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Detector noise; requires a seed at <code>apply</code> time. None =
+noiseless output.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="libssim.instrument.response.InstrumentResponse.resolution_only" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">resolution_only</span>
+
+
+<a href="#libssim.instrument.response.InstrumentResponse.resolution_only" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">resolution_only</span><span class="p">(</span><span class="n">spectrum</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="            Spectrum
+
+
+  
+      dataclass
+   (libssim.core.spectrum.Spectrum)" href="../core/#libssim.core.spectrum.Spectrum">Spectrum</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="            Spectrum
+
+
+  
+      dataclass
+   (libssim.core.spectrum.Spectrum)" href="../core/#libssim.core.spectrum.Spectrum">Spectrum</a></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Apply only the finite spectral resolution (LSF convolution).</p>
+<p>The debugging/validation path: line shapes as the spectrometer
+sees them, with physical intensity units untouched.</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src\libssim\instrument\response.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">resolution_only</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spectrum</span><span class="p">:</span> <span class="n">Spectrum</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Spectrum</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Apply only the finite spectral resolution (LSF convolution).</span>
+
+<span class="sd">    The debugging/validation path: line shapes as the spectrometer</span>
+<span class="sd">    sees them, with physical intensity units untouched.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">instrumental_profile</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">spectrum</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">instrumental_profile</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span><span class="n">spectrum</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="libssim.instrument.response.InstrumentResponse.noise_free" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">noise_free</span>
+
+
+<a href="#libssim.instrument.response.InstrumentResponse.noise_free" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">noise_free</span><span class="p">(</span><span class="n">spectrum</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="            Spectrum
+
+
+  
+      dataclass
+   (libssim.core.spectrum.Spectrum)" href="../core/#libssim.core.spectrum.Spectrum">Spectrum</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="            Spectrum
+
+
+  
+      dataclass
+   (libssim.core.spectrum.Spectrum)" href="../core/#libssim.core.spectrum.Spectrum">Spectrum</a></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Full pipeline except the noise stage: convolution, efficiency
+scaling and pixel sampling with deterministic output.</p>
+<p>This is the expected-counts spectrum — the mean around which
+<code>apply</code> scatters.</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src\libssim\instrument\response.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span>
+<span class="normal">85</span>
+<span class="normal">86</span>
+<span class="normal">87</span>
+<span class="normal">88</span>
+<span class="normal">89</span>
+<span class="normal">90</span>
+<span class="normal">91</span>
+<span class="normal">92</span>
+<span class="normal">93</span>
+<span class="normal">94</span>
+<span class="normal">95</span>
+<span class="normal">96</span>
+<span class="normal">97</span>
+<span class="normal">98</span>
+<span class="normal">99</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">noise_free</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spectrum</span><span class="p">:</span> <span class="n">Spectrum</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Spectrum</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Full pipeline except the noise stage: convolution, efficiency</span>
+<span class="sd">    scaling and pixel sampling with deterministic output.</span>
+
+<span class="sd">    This is the expected-counts spectrum — the mean around which</span>
+<span class="sd">    `apply` scatters.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolution_only</span><span class="p">(</span><span class="n">spectrum</span><span class="p">)</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection_optics</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collection_optics</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_pixels</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">instrumental_profile</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">instrumental_profile</span><span class="o">.</span><span class="n">sample_to_pixels</span><span class="p">(</span>
+                <span class="n">result</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_pixels</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;pixel sampling requires an instrumental_profile &quot;</span>
+                <span class="s2">&quot;(it provides sample_to_pixels)&quot;</span>
+            <span class="p">)</span>
+    <span class="k">return</span> <span class="n">result</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="libssim.instrument.response.InstrumentResponse.apply" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>            <span class="doc doc-object-name doc-function-name">apply</span>
+
+
+<a href="#libssim.instrument.response.InstrumentResponse.apply" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">apply</span><span class="p">(</span><span class="n">spectrum</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="            Spectrum
+
+
+  
+      dataclass
+   (libssim.core.spectrum.Spectrum)" href="../core/#libssim.core.spectrum.Spectrum">Spectrum</a></span><span class="p">,</span> <span class="n">seed</span><span class="p">:</span> <span class="n"><span title="typing.Optional">Optional</span></span><span class="p">[</span><span class="n"><span title="int">int</span></span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="            Spectrum
+
+
+  
+      dataclass
+   (libssim.core.spectrum.Spectrum)" href="../core/#libssim.core.spectrum.Spectrum">Spectrum</a></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Full pipeline including noise.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>spectrum</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="            Spectrum
+
+
+  
+      dataclass
+   (libssim.core.spectrum.Spectrum)" href="../core/#libssim.core.spectrum.Spectrum">Spectrum</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Physics-level spectrum (from the temporal integrator or the
+transport layer).</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>seed</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Required when a <code>noise_model</code> is configured (reproducible
+noise); ignored otherwise.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src\libssim\instrument\response.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spectrum</span><span class="p">:</span> <span class="n">Spectrum</span><span class="p">,</span> <span class="n">seed</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Spectrum</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Full pipeline including noise.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    spectrum : Spectrum</span>
+<span class="sd">        Physics-level spectrum (from the temporal integrator or the</span>
+<span class="sd">        transport layer).</span>
+<span class="sd">    seed : int, optional</span>
+<span class="sd">        Required when a `noise_model` is configured (reproducible</span>
+<span class="sd">        noise); ignored otherwise.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">noise_free</span><span class="p">(</span><span class="n">spectrum</span><span class="p">)</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">noise_model</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">result</span>
+    <span class="k">if</span> <span class="n">seed</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;a seed is required when noise_model is set &quot;</span>
+            <span class="s2">&quot;(reproducibility requirement); use noise_free() for the &quot;</span>
+            <span class="s2">&quot;deterministic spectrum&quot;</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">noise_model</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">seed</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.indexes", "search.suggest", "search.highlight", "toc.follow", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../javascripts/mathjax.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

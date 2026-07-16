@@ -1,0 +1,1657 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Forward modeling of laser-induced breakdown spectroscopy (LIBS) plasma emission — LTE physics, radiative transport, temporal gating, and instrument response.">
+      
+      
+      
+      
+        <link rel="prev" href="../validation_strategy/">
+      
+      
+        <link rel="next" href="../ai_instructions/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Methods Outline - libssim</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#methods-section-detailed-outline" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="libssim" class="md-header__button md-logo" aria-label="libssim" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            libssim
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Methods Outline
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../reference/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  API Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../project_goal/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Project Docs
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="libssim" class="md-nav__button md-logo" aria-label="libssim" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    libssim
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/core/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/atomic/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Atomic Data
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/physics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Physics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/transport/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Transport
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/temporal/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Temporal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/instrument/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Instrument
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/validation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Docs
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Project Docs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../project_goal/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Goal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../development_rules/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development Rules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../implementation_plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation Plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validation_strategy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation Strategy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Methods Outline
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Methods Outline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#2-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Methods
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Methods">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-overview-of-the-forward-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Overview of the forward model
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-atomic-and-spectroscopic-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Atomic and spectroscopic data
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-plasma-state-and-equilibrium-populations-lte" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 Plasma state and equilibrium populations (LTE)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-partition-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4 Partition functions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#25-line-emission-and-absorption-coefficients" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.5 Line emission and absorption coefficients
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#26-line-profiles-and-broadening" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.6 Line profiles and broadening
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#27-continuum-radiation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.7 Continuum radiation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#28-plasma-geometry-and-radiative-transfer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.8 Plasma geometry and radiative transfer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#29-temporal-evolution-and-gate-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.9 Temporal evolution and gate integration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#210-instrument-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.10 Instrument model
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#211-numerical-implementation-and-verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.11 Numerical implementation and verification
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#212-validation-methodology" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.12 Validation methodology
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#suggested-tablesfigures-for-the-section" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Suggested tables/figures for the section
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ai_instructions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI Instructions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#2-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Methods
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Methods">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-overview-of-the-forward-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Overview of the forward model
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-atomic-and-spectroscopic-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Atomic and spectroscopic data
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-plasma-state-and-equilibrium-populations-lte" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 Plasma state and equilibrium populations (LTE)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-partition-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4 Partition functions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#25-line-emission-and-absorption-coefficients" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.5 Line emission and absorption coefficients
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#26-line-profiles-and-broadening" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.6 Line profiles and broadening
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#27-continuum-radiation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.7 Continuum radiation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#28-plasma-geometry-and-radiative-transfer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.8 Plasma geometry and radiative transfer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#29-temporal-evolution-and-gate-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.9 Temporal evolution and gate integration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#210-instrument-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.10 Instrument model
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#211-numerical-implementation-and-verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.11 Numerical implementation and verification
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#212-validation-methodology" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.12 Validation methodology
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#suggested-tablesfigures-for-the-section" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Suggested tables/figures for the section
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="methods-section-detailed-outline">Methods Section — Detailed Outline<a class="headerlink" href="#methods-section-detailed-outline" title="Permanent link">&para;</a></h1>
+<p>Draft outline for the journal-article methods section, built from what is
+actually implemented in <code>libssim</code>. Equation tags "(H x-y, p. z)" refer to
+Herrera (2008), the source dissertation; the paper should renumber them as
+its own equations. Items marked <strong>[deviation]</strong> are documented departures
+from / corrections to the dissertation that belong in the paper because
+they affect reproducibility.</p>
+<hr />
+<h2 id="2-methods">2. Methods<a class="headerlink" href="#2-methods" title="Permanent link">&para;</a></h2>
+<h3 id="21-overview-of-the-forward-model">2.1 Overview of the forward model<a class="headerlink" href="#21-overview-of-the-forward-model" title="Permanent link">&para;</a></h3>
+<ul>
+<li>One-paragraph pipeline statement with a figure (block diagram):
+  <strong>plasma state → LTE population physics → per-zone emissivity/absorption
+  → line-of-sight radiative transfer → temporal gate integration →
+  instrument response → comparison metrics.</strong></li>
+<li>Scope statement: forward (simulation) direction of the CF-LIBS/MC-LIBS
+  formalism of Herrera (2008); LTE, two ionization stages (I ↔ II),
+  spherically symmetric plasma.</li>
+<li>Software statement: open-source Python package (<code>libssim</code>), strict SI
+  units internally, pure/immutable data structures, every physics module
+  unit-tested against analytic identities (details in §2.11).</li>
+</ul>
+<h3 id="22-atomic-and-spectroscopic-data">2.2 Atomic and spectroscopic data<a class="headerlink" href="#22-atomic-and-spectroscopic-data" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Transition data (wavelength, A_ki, level energies, statistical weights)
+  and first ionization energies transcribed from the NIST Atomic Spectra
+  Database (Kramida et al.); robust CSV parser for ASD exports
+  (<code>atomic/parsers.py</code>) with validation of critical fields.</li>
+<li>Air wavelengths as stored; no air/vacuum correction in the physics layer
+  (narrow-line; instrument-layer concern).</li>
+<li>Stark electron-impact half-widths w (at reference density
+  n_e = 10²² m⁻³ = 10¹⁶ cm⁻³) and shift-to-width ratios d/w from tabulated
+  sources (Griem; thesis refs [131,139]).</li>
+<li>Table (paper): lines used per element with λ, A_ki, E_upper, g, w, and
+  ASD accuracy grades.</li>
+</ul>
+<h3 id="23-plasma-state-and-equilibrium-populations-lte">2.3 Plasma state and equilibrium populations (LTE)<a class="headerlink" href="#23-plasma-state-and-equilibrium-populations-lte" title="Permanent link">&para;</a></h3>
+<ul>
+<li>LTE assumption: single temperature T = T_exc = T_ion (justify with
+  gate-delay regime studied).</li>
+<li><strong>Boltzmann level populations</strong> (H 5-1, p. 98):
+  n_k = n_tot g_k exp(−E_k/k_B T)/U(T)  → <code>physics/boltzmann.py</code>.</li>
+<li><strong>Saha ionization balance</strong>, two stages, per element (H 5-2 p. 98 /
+  D-1 p. 274): Saha function s_j(T); closure by mass conservation
+  (D-2) and charge equilibrium (D-3); explicit stage densities
+  (D-8, D-10) → <code>physics/saha.py</code>.</li>
+<li>Self-consistent electron density: implicit equation (D-9)
+  n_e = Σ_j n_j s_j/(s_j+n_e) solved by bracketed root finding
+  (Brent's method, rtol 10⁻¹⁴; unique positive root proven by
+  monotonicity). Mass conservation exact in floating point by
+  construction (n_a = n_j − n_i).</li>
+<li><strong>[deviation]</strong> Ionization-potential lowering Δχ: dissertation defines
+  the quantity but gives no formula; implemented as the standard Debye
+  estimate Δχ_z = z e²/(4πε₀λ_D) (Griem 1964; Drawin &amp; Felenbok 1965),
+  default 0 (magnitude 0.05–0.2 eV under LIBS conditions).</li>
+<li><strong>LTE validity diagnostics</strong> reported with every simulation:
+  McWhirter criterion (H 5-3, p. 99) and Debye-sphere particle count
+  (H 5-16, p. 106), both re-derived in SI and validated against the
+  printed CGS coefficients.</li>
+</ul>
+<h3 id="24-partition-functions">2.4 Partition functions<a class="headerlink" href="#24-partition-functions" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Definition: direct Boltzmann sum over bound levels U(T) = Σ g_i
+  exp(−E_i/k_B T) (H p. 260) → <code>physics/partition.py</code>.</li>
+<li>Three composable evaluation strategies (state which was used per element):</li>
+<li>direct summation over transcribed NIST level lists (primary; Na I
+     complete through n = 6, Al I through 6s);</li>
+<li>linear interpolation on tabulated (T, U) grids (Drawin &amp; Felenbok /
+     Halenka style);</li>
+<li>Irwin (1981) polynomial ln U = Σ a_k (ln T)^k as an out-of-grid
+     fallback.</li>
+<li>No extrapolation outside validity ranges (raises instead — safety
+  decision worth one sentence).</li>
+<li>High-n Rydberg truncation caveat (Inglis–Teller microfield dissolution);
+  optional hydrogenic tail augmentation (2n² weights at χ − R_y/n²),
+  deliberately not applied by default; quantify truncation error
+  (few % at 15 kK for Na/Al lists).</li>
+</ul>
+<h3 id="25-line-emission-and-absorption-coefficients">2.5 Line emission and absorption coefficients<a class="headerlink" href="#25-line-emission-and-absorption-coefficients" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Spontaneous photon rate I_ki = n_k A_ki (H 5-8, pp. 103–104); spectral
+  emission coefficient ε_ν = (hν₀/4π) n_k A_ki P(ν) → <code>physics/emission.py</code>.</li>
+<li><strong>[deviation]</strong> Einstein B_lu from A_ul via the standard detailed-balance
+  relations (Mihalas 1978) — not printed in the dissertation, which takes
+  B as data.</li>
+<li>Bound-bound absorption coefficient with LTE stimulated-emission factor
+  (H 5-52, p. 120): κ_bb = (hν₀/c) B_lu n_l P(ν)(1 − e^(−hν₀/k_BT)).</li>
+<li>Narrow-line approximation (hν and stimulated factor evaluated at ν₀;
+  relative error &lt; 10⁻⁴).</li>
+<li>Internal consistency: Kirchhoff identity ε_ν/κ_bb = B_ν(T) enforced
+  numerically in the test suite (state this — it pins the A↔B convention).</li>
+<li>Planck functions B_ν, B_λ (H 3-11, p. 55), expm1-stable at both limits.</li>
+</ul>
+<h3 id="26-line-profiles-and-broadening">2.6 Line profiles and broadening<a class="headerlink" href="#26-line-profiles-and-broadening" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Voigt profile: Doppler (Gaussian) ⊗ Stark (Lorentzian)
+  → <code>physics/line_profiles.py</code>, evaluated with the Faddeeva function
+  (scipy <code>voigt_profile</code>; dissertation used a Humlíček/Schreier algorithm —
+  same function).</li>
+<li>Doppler FWHM (H 3-1, p. 50): Δλ_D = λ₀ √(8 ln2 k_B T/(m c²)).</li>
+<li>Quadratic Stark FWHM (H 3-8, p. 53, SI form): linear in n_e, tabulated
+  w at 10²² m⁻³, optional ion-broadening bracket with Debye correction;
+  α = 0 default (negligible under LIBS conditions, H p. 106).</li>
+<li>Quadratic Stark shift (H 3-9, p. 53); red-shift sign convention;
+  <strong>[deviation]</strong> ambiguous ± joining the ion term to d/w resolved to the
+  Griem convention.</li>
+<li><strong>[deviation]</strong> Printed reduced-Voigt pair (H 5-54/5-55) is mutually
+  inconsistent by √ln2; profiles are evaluated with exact FWHM semantics
+  (equivalent to 5-53 with the √ln2 restored); equivalence to the verbatim
+  reduced form proven to machine precision in tests.</li>
+<li>All profiles analytically unit-normalized (∫P dν = 1; tested ≤ 10⁻¹⁰);
+  Lorentzian tail-mass note for finite grids.</li>
+<li>Whiting-type FWHM algebra (H 5-18, p. 107) for Stark-width extraction
+  (used in the validation workflow, §2.12).</li>
+<li>Explicitly out of scope: van der Waals, resonance, natural broadening
+  (negligible vs. Stark + Doppler under these conditions).</li>
+</ul>
+<h3 id="27-continuum-radiation">2.7 Continuum radiation<a class="headerlink" href="#27-continuum-radiation" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Kramers–Unsöld hydrogen-like model → <code>physics/continuum.py</code>:
+  free-free (inverse bremsstrahlung, H 5-50, p. 119) and free-bound
+  (radiative recombination, H 5-51, p. 120) absorption coefficients;
+  Gaunt factor G and Biberman factor ξ ≈ 1 defaults.</li>
+<li><strong>[deviation]</strong> Typographical error in printed Eq. 5-50 exponential
+  factor corrected to (1 − e^(−hν/k_BT)); justified three ways (Rybicki &amp;
+  Lightman coefficient match, Kirchhoff image of Eq. 5-7, physical
+  boundedness).</li>
+<li>Continuum emission via Kirchhoff's law ε_ν = κ_ν B_ν(T); Planck-mean
+  absorption coefficient (H 5-46, p. 118) available for the energy-loss
+  term.</li>
+<li>SI conversion of the Gaussian-CGS forms (e⁶ → e⁶/(4πε₀)³), validated
+  against the printed 3.7×10⁸ CGS coefficient.</li>
+</ul>
+<h3 id="28-plasma-geometry-and-radiative-transfer">2.8 Plasma geometry and radiative transfer<a class="headerlink" href="#28-plasma-geometry-and-radiative-transfer" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Spherical "onion" discretization: N concentric homogeneous shells, each
+  a locally uniform plasma state → <code>transport/geometry.py</code>; parabolic
+  initial T(r) and n(r) profiles (H 5-36/5-37, p. 116) with per-zone Saha
+  closure; single-zone case = uniform sphere.</li>
+<li>Per-zone spectral properties: ε_ν(λ), κ'_ν(λ) with
+  κ' = κ_ff + κ_fb + κ_bb (H 5-49, p. 119) → <code>transport/emissivity.py</code>.</li>
+<li>Formal solution of the RTE (H 5-44, p. 117) along chords at impact
+  parameter p (H 5-48, p. 119) evaluated <strong>analytically per segment</strong>:
+  I_out = I_in e^(−κL) + S(1 − e^(−κL)), S = ε/κ = B_ν (Kirchhoff)
+  → <code>transport/radiative.py</code>. No ODE stepping; expm1 keeps the optically
+  thin limit exact and the thick limit saturates at the blackbody ceiling
+  (H 3-10, p. 55).</li>
+<li>Observables: spatially resolved radiance at one impact parameter, or
+  disk-integrated radiance (area-weighted average over the projected
+  disk) — the standard spatially integrated LIBS measurement.</li>
+<li>Emergent behavior to state: self-absorption and self-reversal arise
+  naturally from cool outer zones (no ad hoc self-absorption parameter).</li>
+<li>Optical depth τ_ν = Σ κ'L reported per line of sight.</li>
+</ul>
+<h3 id="29-temporal-evolution-and-gate-integration">2.9 Temporal evolution and gate integration<a class="headerlink" href="#29-temporal-evolution-and-gate-integration" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Quasi-static assumption: plasma rendered as a static snapshot at each
+  quadrature instant → <code>temporal/</code>.</li>
+<li>Parameter histories: power-law decays T(t) = T_ref (t/t_ref)^(−b),
+  n_e(t) = n_ref (t/t_ref)^(−a) (Aguilera &amp; Aragón 2004; Cristoforetti
+  et al. 2004) or exponential; <strong>[deviation]</strong> documented simplification —
+  the dissertation's ODE energy balance (H 5-35 / App. C) and self-similar
+  expansion (App. B) are not solved; any user profile can be substituted.</li>
+<li>Evolution models: uniform sphere with per-instant Saha closure of n_e
+  (primary, used for validation); self-similar expanding onion
+  (App. B Eq. B-9 densities, frozen profile shape) as the
+  spatially resolved option.</li>
+<li>Detector gate: E_λ = ∫_{t_d}^{t_d+t_g} I_λ(t) dt (top-hat gate;
+  t_delay/t_gate definitions H pp. 46–47), Gauss–Legendre quadrature
+  (default; node count stated), trapezoid alternative.</li>
+</ul>
+<h3 id="210-instrument-model">2.10 Instrument model<a class="headerlink" href="#210-instrument-model" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Chain (each stage optional, order fixed) → <code>instrument/response.py</code>:
+  LSF convolution → spectral collection efficiency → pixel binning →
+  detector noise.</li>
+<li>Line-spread function: Gaussian working model (H p. 59); FWHM from slit
+  bandpass Δλ_s = R_d w_slit (H 3-19, p. 57), diffraction-limited floor
+  (H 3-20, p. 59); Gaussian widths combine in quadrature (H 3-22, p. 60);
+  discrete flux-conserving kernel on a uniform grid, ≥ 3 samples per FWHM
+  enforced.</li>
+<li>Collection efficiency F_det(λ) = F_rel(λ)·F_abs (H 5-9..5-11, p. 104);
+  F_rel from tabulated calibration curves, F_abs a single radiometric
+  scale factor.</li>
+<li>Detector noise (Janesick-standard, documented extension): Poisson shot
+  noise on signal + dark + background, additive Gaussian read noise;
+  seeded RNG → bit-reproducible noisy spectra.</li>
+</ul>
+<h3 id="211-numerical-implementation-and-verification">2.11 Numerical implementation and verification<a class="headerlink" href="#211-numerical-implementation-and-verification" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Python 3 / NumPy / SciPy; strict SI internally; frozen dataclasses;
+  vectorized pure functions; no global state.</li>
+<li>Numerical-stability choices: expm1 for all (1−e^(−x)) factors, Brent
+  bracketing for the Saha root, refusal to extrapolate partition tables,
+  Voigt via Faddeeva.</li>
+<li>Verification strategy (worth a short subsection or table):</li>
+<li>analytic identities as unit tests: profile normalization ≤ 10⁻¹⁰,
+    Kirchhoff closure ε/κ = B_ν, B_λ = B_ν c/λ², Saha mass conservation
+    exact, population fractions sum to 1, SI forms reproduce the printed
+    CGS coefficients (McWhirter, Debye sphere, Stark bracket, Kramers
+    3.7×10⁸), Whiting FWHM accuracy 1–2 %, gate integral ∝ t_gate for a
+    constant plasma, one-zone transfer reproduces
+    I = B(1 − e^(−κl)) exactly;</li>
+<li>limit behavior: T→0 neutral limit, U(T)→g₀, optically thin/thick
+    limits, Wien/Rayleigh–Jeans limits.</li>
+<li>Code availability statement (repository, version/tag, license).</li>
+</ul>
+<h3 id="212-validation-methodology">2.12 Validation methodology<a class="headerlink" href="#212-validation-methodology" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Experimental data handling: literature spectra digitized from embedded
+  figure images in published PDFs (state digitization procedure and
+  estimated wavelength/intensity uncertainty) or loaded from CSV
+  → <code>analysis.load_spectrum_csv</code>.</li>
+<li>Preprocessing mirroring the CF-LIBS preparation (H p. 103)
+  → <code>validation/preprocessing.py</code>: crop to modeled window; baseline
+  subtraction from line-free windows (constant or linear fit);
+  normalization; resampling onto the common model grid; all steps recorded
+  in spectrum metadata (provenance).</li>
+<li>Comparison metrics → <code>validation/metrics.py</code>:</li>
+<li>primary: linear correlation coefficient R (H 5-56, p. 122 — the
+    MC-LIBS cost function);</li>
+<li>supporting: peak-position matching (wavelength calibration + line
+    identification), peak intensity ratios (population/A-value physics),
+    normalized rms residual (overall shape).</li>
+<li>Validation cases (results section will expand; methods states the
+  design): literature-sourced plasma conditions (T, n_e from Stark
+  measurements) drive the uniform-plasma forward model; e.g. Na I D
+  doublet vs. Hansen thesis spectrum at 500 ns delay (R = 0.9894).</li>
+<li>Atomic-data provenance discipline: NIST ASD transcription with flagged
+  low-confidence entries; representative Stark widths flagged for
+  replacement with tabulated coefficients in quantitative width work.</li>
+</ul>
+<h3 id="suggested-tablesfigures-for-the-section">Suggested tables/figures for the section<a class="headerlink" href="#suggested-tablesfigures-for-the-section" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Fig. M1: pipeline block diagram (§2.1).</li>
+<li>Fig. M2: onion geometry + chord/impact-parameter sketch (§2.8).</li>
+<li>Table M1: symbols and units.</li>
+<li>Table M2: atomic data per line with sources/grades (§2.2).</li>
+<li>Table M3: verification identities and tolerances (§2.11).</li>
+<li>Table M4: validation cases with plasma conditions and sources (§2.12).</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.top", "navigation.indexes", "search.suggest", "search.highlight", "toc.follow", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../javascripts/mathjax.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>
